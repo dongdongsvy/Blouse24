@@ -36,12 +36,12 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #2d313f; border-radius: 10px; }
         
-        /* GIAO DIỆN ẨN/HIỆN (SỬ DỤNG !IMPORTANT ĐỂ CHỐNG ĐÈ UI) */
-        .view-section { display: none !important; height: 100%; overflow-y: auto; flex-direction: column; }
-        .view-section.active { display: flex !important; animation: fadeIn 0.4s ease; }
-        #view-quiz.active { flex-direction: row !important; overflow: hidden; } /* Riêng view-quiz dùng flex-row */
-        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* GIAO DIỆN ẨN/HIỆN (SẠCH SẼ, KHÔNG XUNG ĐỘT) */
+        .view-section { display: none; height: 100%; overflow-y: auto; flex-direction: column; }
+        .view-section.active { display: flex; animation: fadeIn 0.4s ease; }
+        #view-quiz.active { flex-direction: row; overflow: hidden; }
 
         /* Overlays */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 9999; display: none; align-items: center; justify-content: center; }
@@ -92,7 +92,7 @@
     <div class="bg-cardBg p-12 rounded-[32px] max-w-md w-full text-center border border-gray-700 shadow-2xl">
         <div class="w-20 h-20 bg-accentBlue text-blue-900 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-8 shadow-lg"><span class="material-symbols-outlined icon-filled">medical_services</span></div>
         <h2 class="text-3xl font-black text-white mb-2">Blouse24</h2>
-        <p class="text-textMuted mb-10 font-medium">Hệ thống Ôn luyện Y Khoa độc quyền. Yêu cầu đăng nhập để đồng bộ tiến độ.</p>
+        <p class="text-textMuted mb-10 font-medium">Hệ thống Ôn luyện Y Khoa YK24A. Yêu cầu đăng nhập để đồng bộ tiến độ.</p>
         <button onclick="window.firebaseLogin()" class="w-full flex items-center justify-center gap-3 bg-white text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-100 transition-all shadow-xl">
             <svg width="24" height="24" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path></svg>
             <span id="btn-login-text">Đăng nhập Google</span>
@@ -130,7 +130,7 @@
         window.userData = { uid: user.uid, name: user.displayName, avatar: '👨‍⚕️', totalDone: 0, totalCorrect: 0, streak: 0, lastDate: "", badges: ['rookie'], blindSpots: [], history: [] };
         await setDoc(doc(window.db, "users", user.uid), window.userData);
       }
-      updateGlobalUI(); switchView('dashboard'); fetchAdminDatabase(false); // Auto load DB silently
+      updateGlobalUI(); switchView('dashboard'); fetchAdminDatabase(false);
     } else { document.getElementById('login-modal').classList.add('active'); }
   });
 
@@ -160,7 +160,7 @@
         </div>
 
         <nav class="flex-1 space-y-2 px-4" id="main-nav">
-            <button onclick="switchView('dashboard')" class="nav-btn active w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
+            <button onclick="switchView('dashboard')" class="nav-btn active bg-cardBg text-white border-l-4 border-primaryBlue w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl hover:bg-cardBg hover:text-white transition-colors font-semibold">
                 <span class="material-symbols-outlined icon-filled">home</span> Trang chủ
             </button>
             <button onclick="switchView('leaderboard')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
@@ -168,6 +168,9 @@
             </button>
             <button onclick="switchView('flashcard')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
                 <span class="material-symbols-outlined">style</span> Góc Mù
+            </button>
+            <button onclick="switchView('settings')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
+                <span class="material-symbols-outlined">settings</span> Cài đặt
             </button>
             <button onclick="switchView('profile')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
                 <span class="material-symbols-outlined">person</span> Cá nhân
@@ -178,7 +181,7 @@
             <div class="flex items-center gap-3 p-2 cursor-pointer hover:bg-cardBg rounded-2xl transition-colors" onclick="switchView('profile')">
                 <div class="w-12 h-12 rounded-full border-2 border-gray-700 flex items-center justify-center text-2xl bg-mainBg shrink-0" id="side-ava">👨‍⚕️</div>
                 <div class="min-w-0 flex-1">
-                    <div class="text-white font-bold text-sm truncate" id="side-name">...</div>
+                    <div class="text-white font-bold text-sm truncate" id="side-name">Đình An</div>
                     <div class="text-[10px] text-primaryBlue font-bold uppercase tracking-widest truncate">YK24A - TNU</div>
                 </div>
             </div>
@@ -406,37 +409,113 @@
                 </div>
             </div>
 
-            <div id="view-profile" class="view-section p-10 max-w-5xl mx-auto w-full">
-                <header class="mb-10"><h2 class="text-3xl font-black text-white mb-1">User Profile</h2><p class="text-textMuted text-sm font-medium">Quản lý hồ sơ và theo dõi lịch sử ôn luyện</p></header>
-                
-                <div class="bg-cardBg rounded-[32px] p-10 border border-gray-700/30 shadow-xl relative overflow-hidden mb-12">
-                    <div class="absolute -top-10 -right-10 w-40 h-40 bg-primaryBlue/5 rounded-full blur-[60px]"></div>
-                    <div class="flex flex-col md:flex-row items-center md:items-start gap-10">
-                        <div class="relative shrink-0">
-                            <div class="w-32 h-32 rounded-full border-4 border-gray-800 bg-mainBg flex items-center justify-center text-6xl shadow-2xl" id="prof-ava-preview">👨‍⚕️</div>
-                            <button onclick="document.getElementById('ava-select-box').classList.toggle('hidden')" class="absolute bottom-0 right-0 w-10 h-10 bg-accentBlue text-blue-900 rounded-full border-4 border-cardBg flex items-center justify-center hover:scale-110 transition-transform"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+            <div id="view-profile" class="view-section w-full h-full p-6 md:p-10 overflow-y-auto">
+                <div class="max-w-5xl mx-auto w-full">
+                    <header class="mb-10"><h2 class="text-3xl font-black text-white mb-1">User Profile</h2><p class="text-textMuted text-sm font-medium">Quản lý hồ sơ và theo dõi lịch sử ôn luyện</p></header>
+                    
+                    <div class="bg-cardBg rounded-[32px] p-8 md:p-10 border border-gray-700/30 shadow-xl relative overflow-hidden mb-12">
+                        <div class="absolute -top-10 -right-10 w-40 h-40 bg-primaryBlue/5 rounded-full blur-[60px]"></div>
+                        <div class="flex flex-col md:flex-row items-center md:items-start gap-8 relative z-10">
+                            <div class="relative shrink-0">
+                                <div class="w-32 h-32 rounded-full border-4 border-gray-800 bg-mainBg flex items-center justify-center text-6xl shadow-2xl" id="prof-ava-preview">👨‍⚕️</div>
+                                <button onclick="document.getElementById('ava-select-box').classList.toggle('hidden')" class="absolute bottom-0 right-0 w-10 h-10 bg-accentBlue text-blue-900 rounded-full border-4 border-cardBg flex items-center justify-center hover:scale-110 transition-transform"><span class="material-symbols-outlined text-[20px]">edit</span></button>
+                            </div>
+                            <div class="flex-1 w-full">
+                                <label class="text-[10px] font-black text-textMuted uppercase tracking-[2px] mb-2 block">Tên hiển thị (Display Name)</label>
+                                <input type="text" id="prof-name" class="w-full bg-mainBg border border-gray-700 rounded-2xl px-6 py-4 text-white font-bold outline-none focus:border-primaryBlue transition-all mb-4 text-lg">
+                                <div id="ava-select-box" class="hidden bg-mainBg p-4 rounded-2xl border border-gray-700 flex gap-2 overflow-x-auto mb-6 shadow-inner"></div>
+                                <button onclick="saveProfile()" class="bg-primaryBlue text-white font-black px-10 py-3.5 rounded-2xl hover:brightness-110 shadow-[0_10px_20px_rgba(59,130,246,0.2)] text-sm transition-all w-full sm:w-auto">Lưu Thay Đổi</button>
+                            </div>
                         </div>
-                        <div class="flex-1 w-full">
-                            <label class="text-[10px] font-black text-textMuted uppercase tracking-[2px] mb-2 block">Tên hiển thị (Display Name)</label>
-                            <input type="text" id="prof-name" class="w-full bg-mainBg border border-gray-700 rounded-2xl px-6 py-4 text-white font-bold outline-none focus:border-primaryBlue transition-all mb-4 text-lg">
-                            <div id="ava-select-box" class="hidden bg-mainBg p-4 rounded-2xl border border-gray-700 flex gap-2 overflow-x-auto mb-6 shadow-inner"></div>
-                            <button onclick="saveProfile()" class="bg-primaryBlue text-white font-black px-10 py-3.5 rounded-2xl hover:brightness-110 shadow-[0_10px_20px_rgba(59,130,246,0.2)] text-sm transition-all">Lưu Thay Đổi</button>
+                    </div>
+
+                    <div class="flex justify-between items-center mb-6"><h3 class="text-white font-black text-2xl">Xem lại tiến trình</h3></div>
+                    <div class="bg-cardBg rounded-[32px] border border-gray-700/30 overflow-hidden shadow-2xl mb-12">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left min-w-[600px]">
+                                <thead class="border-b border-gray-700/50 bg-mainBg/30"><tr class="text-textMuted text-[10px] font-black uppercase tracking-[2px]"><th class="py-5 px-6">Thời gian</th><th class="py-5 px-4">Chủ đề</th><th class="py-5 px-4">Score</th><th class="py-5 px-4">Trạng thái</th></tr></thead>
+                                <tbody class="divide-y divide-gray-700/30 text-sm font-semibold" id="history-table">
+                                    <tr><td colspan="4" class="py-8 text-center text-textMuted">Chưa có lịch sử làm bài.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <h3 class="text-white font-black text-xl mb-6">Huy hiệu đạt được</h3>
+                    <div id="badges-box" class="grid grid-cols-2 md:grid-cols-4 gap-4 pb-10"></div>
+                </div>
+            </div>
+
+            <div id="view-settings" class="view-section w-full h-full p-6 md:p-10 overflow-y-auto">
+                <div class="max-w-5xl mx-auto w-full pb-20">
+                    <header class="mb-10"><h2 class="text-3xl font-black text-white mb-1">Account Settings</h2><p class="text-textMuted text-sm font-medium">Configure your clinical environment and preferences.</p></header>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <div class="lg:col-span-2 bg-cardBg rounded-[32px] p-8 border border-gray-700/30 shadow-lg">
+                            <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-textMuted">palette</span> Appearance</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div class="border-2 border-primaryBlue bg-mainBg rounded-2xl p-4 cursor-pointer relative overflow-hidden">
+                                    <div class="h-20 bg-[#0f1115] rounded-xl flex items-center justify-center mb-3"><span class="material-symbols-outlined text-primaryBlue text-3xl">dark_mode</span></div>
+                                    <div class="text-white font-bold text-sm">Dark Mode</div><div class="text-textMuted text-[10px] mt-1">High precision, low eye-strain.</div>
+                                </div>
+                                <div class="border border-gray-700 bg-mainBg rounded-2xl p-4 cursor-pointer hover:border-gray-500 opacity-50 relative overflow-hidden">
+                                    <div class="h-20 bg-gray-100 rounded-xl flex items-center justify-center mb-3"><span class="material-symbols-outlined text-gray-500 text-3xl">light_mode</span></div>
+                                    <div class="text-gray-400 font-bold text-sm">Light Mode</div><div class="text-gray-600 text-[10px] mt-1">Classic document clarity.</div>
+                                </div>
+                                <div class="border border-gray-700 bg-mainBg rounded-2xl p-4 cursor-pointer hover:border-gray-500 opacity-50 relative overflow-hidden">
+                                    <div class="h-20 bg-gradient-to-r from-[#0f1115] to-gray-200 rounded-xl flex items-center justify-center mb-3"><span class="material-symbols-outlined text-gray-400 text-3xl">contrast</span></div>
+                                    <div class="text-gray-400 font-bold text-sm">Auto</div><div class="text-gray-600 text-[10px] mt-1">Follow system schedule.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="lg:col-span-1 bg-cardBg rounded-[32px] p-8 border border-gray-700/30 shadow-lg">
+                            <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-textMuted">notifications</span> Alerts</h3>
+                            <div class="space-y-6">
+                                <div class="flex justify-between items-center">
+                                    <div><div class="text-white font-bold text-sm">Quiz Reminders</div><div class="text-textMuted text-[10px]">Daily clinical goal alerts</div></div>
+                                    <div class="w-10 h-6 bg-primaryBlue rounded-full relative cursor-pointer"><div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div><div class="text-white font-bold text-sm">Sound Effects</div><div class="text-textMuted text-[10px]">Feedback on diagnosis</div></div>
+                                    <div class="w-10 h-6 bg-gray-700 rounded-full relative cursor-pointer"><div class="absolute left-1 top-1 w-4 h-4 bg-gray-400 rounded-full"></div></div>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <div><div class="text-white font-bold text-sm">Leaderboard Updates</div><div class="text-textMuted text-[10px]">Peer ranking changes</div></div>
+                                    <div class="w-10 h-6 bg-primaryBlue rounded-full relative cursor-pointer"><div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-cardBg rounded-[32px] p-8 border border-gray-700/30 shadow-lg grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div class="md:col-span-2">
+                            <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-warnOrange">tune</span> Quiz Configuration</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-2 block">Default Question Count</label>
+                                    <div class="flex items-center gap-4 bg-mainBg p-1.5 rounded-xl border border-gray-700 w-fit">
+                                        <button class="w-10 h-10 rounded-lg bg-gray-800 text-white font-bold hover:bg-gray-700">-</button>
+                                        <span class="text-lg font-black text-white w-12 text-center">25</span>
+                                        <button class="w-10 h-10 rounded-lg bg-gray-800 text-white font-bold hover:bg-gray-700">+</button>
+                                    </div>
+                                    <p class="text-textMuted text-xs mt-3">Recommended for standard clinical review sessions.</p>
+                                </div>
+                                <div>
+                                    <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-2 block">Default Difficulty</label>
+                                    <div class="bg-mainBg border border-gray-700 rounded-xl px-4 py-3.5 text-white font-bold text-sm flex justify-between items-center cursor-pointer hover:border-gray-500">
+                                        Resident (Level 2) <span class="material-symbols-outlined">expand_more</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="md:col-span-1 bg-blue-900/10 rounded-2xl p-6 border border-blue-900/30 flex flex-col justify-center">
+                            <div class="flex items-center gap-2 text-accentBlue font-bold text-sm mb-2"><span class="material-symbols-outlined text-[18px]">auto_awesome</span> Smart Recommendation</div>
+                            <p class="text-textMuted text-xs leading-relaxed mb-4">Based on your recent performance, we recommend increasing your question count to 40 for optimal retention.</p>
+                            <button class="w-full bg-gray-800 text-white font-bold py-2.5 rounded-xl hover:bg-primaryBlue hover:border-primaryBlue transition-all text-xs border border-gray-600">Optimize Now</button>
                         </div>
                     </div>
                 </div>
-
-                <div class="flex justify-between items-center mb-6"><h3 class="text-white font-black text-2xl">Xem lại tiến trình</h3></div>
-                <div class="bg-cardBg rounded-[32px] border border-gray-700/30 overflow-hidden shadow-2xl mb-12">
-                    <table class="w-full text-left">
-                        <thead class="border-b border-gray-700/50 bg-mainBg/30"><tr class="text-textMuted text-[10px] font-black uppercase tracking-[2px]"><th class="py-5 px-8">Thời gian</th><th class="py-5 px-4">Chủ đề</th><th class="py-5 px-4">Score</th><th class="py-5 px-4">Trạng thái</th></tr></thead>
-                        <tbody class="divide-y divide-gray-700/30 text-sm font-semibold" id="history-table">
-                            <tr><td colspan="4" class="py-8 text-center text-textMuted">Chưa có lịch sử làm bài.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <h3 class="text-white font-black text-xl mb-6">Huy hiệu đạt được</h3>
-                <div id="badges-box" class="grid grid-cols-2 md:grid-cols-4 gap-4 pb-20"></div>
             </div>
 
         </div> </main>
@@ -469,22 +548,32 @@ function showToast(msg) {
 }
 
 function switchView(id) {
-    document.querySelectorAll('.view-section').forEach(v=>v.classList.remove('active')); 
-    document.getElementById('view-'+id).classList.add('active');
-    
-    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active', 'bg-cardBg', 'text-white', 'border-l-4', 'border-primaryBlue'));
+    // 1. Ẩn TẤT CẢ các màn hình bằng JS (gỡ bỏ .active)
+    document.querySelectorAll('.view-section').forEach(v => {
+        v.classList.remove('active');
+    });
+
+    // 2. Chỉ BẬT màn hình được chọn
+    const targetView = document.getElementById('view-' + id);
+    if(targetView) targetView.classList.add('active');
+
+    // 3. Đổi màu nút Sidebar đang chọn
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active', 'bg-cardBg', 'text-white', 'border-l-4', 'border-primaryBlue'));
     const btn = document.querySelector(`.nav-btn[onclick*="${id}"]`);
     if(btn) btn.classList.add('active', 'bg-cardBg', 'text-white', 'border-l-4', 'border-primaryBlue');
-    
+
+    // 4. Ẩn Topbar nếu ở màn làm bài hoặc tạo đề
     const topbar = document.getElementById('global-topbar');
-    if(id==='quiz' || id==='setup') topbar.classList.add('hidden'); else topbar.classList.remove('hidden');
-    
-    const titleMap = {'dashboard':'Trang chủ', 'leaderboard':'Bảng xếp hạng', 'profile':'Cá nhân', 'flashcard':'Góc mù', 'result':'Kết quả'};
-    document.getElementById('topbar-title').textContent = titleMap[id] || id;
-    
-    if(id==='leaderboard') loadLeaderboardUI();
-    if(id==='flashcard') renderFlashcards();
-    if(id==='profile') setupProfileView();
+    if(id === 'quiz' || id === 'setup') topbar.classList.add('hidden'); else topbar.classList.remove('hidden');
+
+    // Đổi Tiêu đề Topbar
+    const titleMap = {'dashboard':'Trang chủ', 'leaderboard':'Bảng xếp hạng', 'settings':'Cài đặt', 'profile':'Cá nhân', 'flashcard':'Góc mù', 'result':'Kết quả'};
+    if (document.getElementById('topbar-title')) document.getElementById('topbar-title').textContent = titleMap[id] || id;
+
+    // Load Data tương ứng
+    if(id === 'leaderboard') loadLeaderboardUI();
+    if(id === 'flashcard') renderFlashcards();
+    if(id === 'profile') setupProfileView();
 }
 
 function updateGlobalUI() {
@@ -704,7 +793,7 @@ function setupProfileView() {
         bBox.innerHTML+=`<div class="bg-cardBg border border-primaryBlue/30 rounded-3xl p-6 text-center shadow-[0_5px_15px_rgba(59,130,246,0.1)]"><div class="text-5xl mb-3">${b.i}</div><div class="text-white font-bold text-sm mb-1">${b.n}</div><div class="text-textMuted text-[10px]">${b.d}</div></div>`;
     });
 }
-async function saveProfile() { window.userData.name=document.getElementById('prof-name').value.trim()||'Bác sĩ'; await window.syncDataToCloud(); updateGlobalUI(); showToast('✅ Lưu hồ sơ thành công!'); }
+async function saveProfile() { window.userData.name=document.getElementById('prof-name').value.trim()||'Đình An'; await window.syncDataToCloud(); updateGlobalUI(); showToast('✅ Lưu hồ sơ thành công!'); }
 </script>
 </body>
 </html>
