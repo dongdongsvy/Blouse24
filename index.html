@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blouse24 - Clinical Authority</title>
+    <title>Blouse24 - Hệ thống Y Khoa YK24A</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
     
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['Sora', 'sans-serif'], serif: ['Lora', 'serif'] },
+                    fontFamily: { sans: ['"Be Vietnam Pro"', 'sans-serif'], serif: ['Lora', 'serif'] },
                     colors: {
                         mainBg: '#121319', sidebarBg: '#181920', cardBg: '#1c1e26', cardHover: '#232530',
                         textMuted: '#8b949e', primaryBlue: '#3b82f6', accentBlue: '#c4d4ff', accentText: '#1e3a8a',
@@ -28,7 +30,7 @@
 
     <style>
         /* RESET CƠ BẢN */
-        html, body { width: 100vw; height: 100vh; margin: 0; padding: 0; overflow: hidden; background-color: #121319; color: #fff; font-family: 'Sora', sans-serif;}
+        html, body { width: 100vw; height: 100vh; margin: 0; padding: 0; overflow: hidden; background-color: #121319; color: #fff; font-family: '"Be Vietnam Pro"', sans-serif;}
         
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .icon-filled { font-variation-settings: 'FILL' 1; }
@@ -42,7 +44,7 @@
         .view-section { display: none; height: 100%; overflow-y: auto; flex-direction: column; }
         .view-section.active { display: flex; animation: fadeIn 0.4s ease; }
 
-        /* [SỬA 1] View quiz: flex row, overflow hidden để hai cột tự scroll riêng */
+        /* View quiz: flex row */
         #view-quiz { display: none; }
         #view-quiz.active { display: flex; flex-direction: row; height: 100%; overflow: hidden; }
 
@@ -66,14 +68,14 @@
         .choice-item.ans-wrong .c-key { background: #f43f5e !important; color: #fff !important; }
 
         /* 3D Flashcard */
-        .fc-scene { perspective: 1000px; width: 100%; min-height: 300px; cursor: pointer; }
-        .fc-card { position: relative; width: 100%; height: 100%; min-height: 300px; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+        .fc-scene { perspective: 1000px; width: 100%; min-height: 350px; cursor: pointer; }
+        .fc-card { position: relative; width: 100%; height: 100%; min-height: 350px; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
         .fc-card.is-flipped { transform: rotateY(180deg); }
-        .fc-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 32px; padding: 3rem; display: flex; flex-direction: column; justify-content: center; }
+        .fc-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 32px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; overflow-y: auto; }
         .fc-front { background: #1c1e26; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         .fc-back { background: rgba(59,130,246,0.05); border: 2px solid #3b82f6; transform: rotateY(180deg); }
 
-        /* [THÊM MỚI] Nút SRS Flashcard */
+        /* Nút SRS Flashcard */
         .srs-btn { flex: 1; padding: 12px 8px; border-radius: 16px; font-weight: 800; font-size: 13px; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; border: 2px solid transparent; }
         .srs-btn:hover { transform: translateY(-2px); filter: brightness(1.15); }
         .srs-btn .srs-label { font-size: 15px; font-weight: 900; }
@@ -88,7 +90,7 @@
         .toast { background: #1c1e26; border: 1px solid #3b82f6; padding: 15px 20px; border-radius: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: translateX(120%); transition: 0.4s; color: #fff; font-weight: bold;}
         .toast.show { transform: translateX(0); }
 
-        /* [THÊM MỚI] Sidebar Toggle */
+        /* Sidebar Toggle */
         #main-sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
         #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 19; }
         @media (max-width: 768px) {
@@ -172,18 +174,16 @@
   };
 </script>
 
-<!-- [SỬA 2] Overlay cho mobile sidebar -->
 <div id="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <div class="flex w-full h-full bg-mainBg">
     
-    <!-- [SỬA 2] Sidebar có id để toggle -->
     <aside id="main-sidebar" class="w-[280px] bg-sidebarBg h-full flex flex-col pt-10 pb-6 shrink-0 border-r border-gray-800/50 z-20 shadow-2xl">
         <div class="px-8 mb-12 flex items-center gap-3">
             <div class="w-10 h-10 bg-accentBlue rounded-xl flex items-center justify-center text-accentText shadow-lg"><span class="material-symbols-outlined icon-filled">medical_services</span></div>
             <div>
                 <h1 class="font-extrabold text-white text-xl leading-none">Blouse24</h1>
-                <span class="text-[9px] text-primaryBlue font-bold tracking-[0.2em] uppercase">Clinical Authority</span>
+                <span class="text-[9px] text-primaryBlue font-bold tracking-[0.2em] uppercase">Hệ Thống Y Khoa</span>
             </div>
         </div>
 
@@ -194,8 +194,11 @@
             <button onclick="switchView('leaderboard')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
                 <span class="material-symbols-outlined">leaderboard</span> Bảng xếp hạng
             </button>
+            <button onclick="switchView('blindspot')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
+                <span class="material-symbols-outlined">visibility_off</span> Góc Mù
+            </button>
             <button onclick="switchView('flashcard')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
-                <span class="material-symbols-outlined">style</span> Góc Mù
+                <span class="material-symbols-outlined">style</span> Flashcard
             </button>
             <button onclick="switchView('settings')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
                 <span class="material-symbols-outlined">settings</span> Cài đặt
@@ -221,7 +224,6 @@
 
     <main class="flex-1 h-full relative flex flex-col overflow-hidden">
         
-        <!-- [SỬA 2] Topbar thêm nút hamburger -->
         <header class="flex justify-between items-center px-6 md:px-10 py-5 bg-mainBg/90 backdrop-blur-md z-10 w-full shrink-0 border-b border-gray-800/50" id="global-topbar">
             <div class="flex items-center gap-4">
                 <button onclick="toggleSidebar()" class="w-10 h-10 rounded-xl bg-cardBg border border-gray-700 flex items-center justify-center text-textMuted hover:text-white hover:border-gray-500 transition-all">
@@ -242,7 +244,6 @@
 
         <div class="flex-1 overflow-hidden relative">
 
-            <!-- DASHBOARD -->
             <div id="view-dashboard" class="view-section active p-6 md:p-10 max-w-6xl mx-auto w-full">
                 <section class="bg-cardBg rounded-[32px] p-8 md:p-10 flex justify-between items-center mb-8 border border-gray-700/30 shadow-lg">
                     <div class="max-w-xl">
@@ -294,7 +295,6 @@
                 </section>
             </div>
 
-            <!-- SETUP -->
             <div id="view-setup" class="view-section p-6 md:p-10 max-w-5xl mx-auto w-full">
                 <header class="mb-10"><h2 class="text-3xl font-black text-white mb-2">Thiết lập bài thi</h2><p class="text-textMuted text-sm">Tùy chỉnh nội dung ôn luyện theo nhu cầu.</p></header>
                 <div class="bg-cardBg rounded-[32px] p-8 md:p-10 border border-gray-700/30 shadow-xl flex-1 flex flex-col relative overflow-hidden">
@@ -322,16 +322,10 @@
                 </div>
             </div>
 
-            <!-- [SỬA 1] QUIZ: flex-row, mỗi cột tự scroll -->
             <div id="view-quiz" class="view-section w-full">
-                <!-- Cột trái: sidebar quiz -->
-                <aside class="w-[300px] border-r border-gray-800/50 p-5 flex flex-col gap-5 bg-mainBg/50 shrink-0 h-full overflow-y-auto">
-                    <!-- Header nhỏ trong quiz với nút thoát và timer -->
+                <aside id="quiz-sidebar" class="w-[300px] border-r border-gray-800/50 p-5 flex-col gap-5 bg-mainBg/50 shrink-0 h-full overflow-y-auto hidden md:flex">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
-                            <button onclick="toggleSidebar()" class="w-8 h-8 rounded-lg bg-cardBg border border-gray-700 flex items-center justify-center text-textMuted hover:text-white transition-all md:hidden">
-                                <span class="material-symbols-outlined text-[18px]">menu</span>
-                            </button>
                             <span id="q-title" class="bg-gray-800 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">CÂU 1</span>
                         </div>
                         <div id="q-timer-box" class="hidden flex items-center gap-1 text-warnOrange font-bold text-sm"><span class="material-symbols-outlined text-[16px]">schedule</span> <span id="q-timer">00:00</span></div>
@@ -345,32 +339,39 @@
                         <div class="flex items-center gap-2 text-primaryBlue mb-2"><span class="material-symbols-outlined icon-filled text-base">lightbulb</span><span class="font-bold text-xs">Mẹo lâm sàng</span></div>
                         <p class="text-textMuted text-xs font-medium leading-relaxed">Hãy đọc kỹ các dấu hiệu nhận biết, xác định đúng từ khóa để tăng tỷ lệ chính xác trong chẩn đoán.</p>
                     </div>
-                    <!-- Các nút điều hướng -->
                     <div class="mt-auto flex flex-col gap-3 pt-2">
                         <span id="q-meta" class="bg-blue-900/30 text-primaryBlue px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider border border-blue-900/50 text-center">CHỦ ĐỀ</span>
                         <button onclick="quizSkip()" id="btn-skip" class="hidden items-center justify-center gap-2 px-6 py-3 rounded-xl border border-gray-700 text-textMuted font-bold hover:bg-gray-800 hover:text-white transition-all text-sm">Bỏ qua ⏭</button>
-                        <button id="btn-practice-next" onclick="practiceNext()" class="hidden bg-accentBlue text-blue-900 font-bold px-6 py-3 rounded-xl text-sm hover:brightness-110 shadow-lg transition-all items-center justify-center gap-2">Tiếp tục <span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
                         <button id="btn-exam-submit" onclick="submitQuiz()" class="hidden bg-primaryBlue text-white font-black px-6 py-3 rounded-xl text-sm hover:brightness-110 shadow-[0_10px_20px_rgba(59,130,246,0.3)] transition-all text-center">NỘP BÀI</button>
                         <button onclick="if(confirm('Hủy bài thi và về trang chủ?')) switchView('dashboard');" class="text-textMuted hover:text-errorRed font-bold text-xs uppercase tracking-widest bg-gray-800/50 px-4 py-2.5 rounded-lg transition-colors text-center">Thoát</button>
                     </div>
                 </aside>
 
-                <!-- Cột phải: nội dung câu hỏi - CÓ scroll riêng -->
-                <div class="flex-1 p-6 md:p-10 flex flex-col h-full overflow-y-auto">
-                    <div class="bg-cardBg rounded-[32px] p-8 md:p-10 flex flex-col border border-gray-700/30 shadow-xl relative overflow-hidden">
+                <div class="flex-1 p-6 md:p-10 flex flex-col h-full overflow-hidden relative">
+                    <div class="flex md:hidden justify-between items-center mb-4">
+                         <span id="q-title-mobile" class="bg-gray-800 text-white px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider">CÂU 1</span>
+                         <button onclick="if(confirm('Hủy bài thi và thoát?')) switchView('dashboard');" class="text-textMuted hover:text-errorRed font-bold text-xs uppercase tracking-widest bg-gray-800/50 px-4 py-2 rounded-lg transition-colors">Thoát</button>
+                    </div>
+
+                    <div class="bg-cardBg rounded-[32px] p-6 md:p-10 flex flex-col border border-gray-700/30 shadow-xl relative overflow-hidden h-full">
                         <div class="absolute -top-20 -left-20 w-64 h-64 bg-primaryBlue/5 rounded-full blur-[80px] pointer-events-none"></div>
-                        <!-- [SỬA 5] Nội dung câu hỏi + ảnh -->
-                        <h2 id="q-text" class="font-serif text-xl md:text-2xl text-gray-200 leading-relaxed italic mb-4 relative z-10">...</h2>
-                        <div id="q-image-box" class="mb-6 hidden relative z-10">
-                            <img id="q-image" src="" alt="Hình ảnh câu hỏi" class="max-w-full max-h-64 rounded-2xl border border-gray-700 object-contain mx-auto shadow-lg">
+                        
+                        <div class="flex-1 overflow-y-auto pr-2 relative z-10">
+                            <h2 id="q-text" class="font-serif text-xl md:text-2xl text-gray-200 leading-relaxed italic mb-4">...</h2>
+                            <div id="q-image-box" class="mb-6 hidden flex justify-center">
+                                <img id="q-image" src="" alt="Hình ảnh câu hỏi" class="max-w-full max-h-64 rounded-2xl border border-gray-700 object-contain shadow-lg">
+                            </div>
+                            <div id="choices-box" class="flex flex-col gap-3"></div>
+                            <div id="practice-feedback" class="mt-6 p-5 rounded-2xl hidden"></div>
                         </div>
-                        <div id="choices-box" class="flex flex-col gap-3 relative z-10"></div>
-                        <div id="practice-feedback" class="mt-6 p-5 rounded-2xl hidden relative z-10"></div>
+
+                        <div class="mt-6 pt-6 border-t border-gray-800 flex justify-end items-center relative z-10 shrink-0">
+                            <button id="btn-practice-next" onclick="practiceNext()" class="hidden bg-accentBlue text-blue-900 font-bold px-8 py-3.5 rounded-xl text-sm hover:brightness-110 shadow-lg transition-all items-center gap-2">Tiếp tục <span class="material-symbols-outlined text-[18px]">chevron_right</span></button>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- RESULT -->
             <div id="view-result" class="view-section relative max-w-4xl mx-auto w-full">
                 <div class="absolute top-20 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-primaryBlue/10 rounded-[100%] blur-[100px] pointer-events-none z-0"></div>
                 
@@ -394,102 +395,93 @@
                 </div>
             </div>
 
-            <!-- [SỬA 3] FLASHCARD - Góc Mù với SRS Anki-like -->
-            <div id="view-flashcard" class="view-section p-6 md:p-10 max-w-5xl mx-auto w-full">
-                <header class="flex justify-between items-center mb-8">
-                    <div><h2 class="text-2xl md:text-3xl font-black text-white mb-2 flex items-center gap-3"><span class="material-symbols-outlined text-warnOrange text-4xl icon-filled">style</span> Góc Mù Kiến Thức</h2><p class="text-textMuted text-sm">Hệ thống ôn lại theo thuật toán Lặp lại ngắt quãng (Spaced Repetition).</p></div>
-                    <div class="bg-cardBg border border-gray-700 px-5 py-3 rounded-2xl flex items-center gap-3 shadow-lg shrink-0"><span class="text-textMuted text-xs font-bold uppercase tracking-widest">Đang ôn:</span><span class="text-primaryBlue font-black text-xl" id="fc-counter">0 thẻ</span></div>
-                </header>
-                
-                <!-- Thông tin lịch ôn tiếp theo -->
-                <div id="fc-next-review" class="hidden mb-6 bg-blue-900/20 border border-blue-900/40 rounded-2xl p-4 flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primaryBlue">schedule</span>
-                    <p class="text-primaryBlue text-sm font-medium" id="fc-next-review-text">Thẻ tiếp theo sẽ được ôn sau...</p>
-                </div>
+            <div id="view-blindspot" class="view-section p-6 md:p-10 max-w-5xl mx-auto w-full">
+                <header class="mb-10"><h2 class="text-3xl font-black text-white mb-2 flex items-center gap-3"><span class="material-symbols-outlined text-warnOrange text-4xl icon-filled">visibility_off</span> Góc Mù</h2><p class="text-textMuted text-sm">Danh sách các câu bạn đã làm sai trong bài kiểm tra vừa qua.</p></header>
+                <div id="blindspot-empty" class="text-center py-20 hidden"><span class="material-symbols-outlined text-6xl text-successGreen mb-4">check_circle</span><h3 class="text-2xl font-bold text-white">Trống trơn!</h3><p class="text-textMuted mt-2">Bạn không làm sai câu nào trong bài kiểm tra gần nhất.</p></div>
+                <div id="blindspot-list" class="space-y-6 pb-20"></div>
+            </div>
 
-                <div id="fc-empty" class="text-center py-24 hidden bg-cardBg rounded-[32px] border border-gray-700/30 shadow-xl"><span class="material-symbols-outlined text-6xl text-successGreen mb-6">task_alt</span><h3 class="text-2xl font-bold text-white mb-2">Góc mù trống trơn!</h3><p class="text-textMuted">Xuất sắc! Kiến thức của bạn rất vững chắc.</p></div>
+            <div id="view-flashcard" class="view-section p-6 md:p-10 max-w-5xl mx-auto w-full">
+                <header class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+                    <div><h2 class="text-2xl md:text-3xl font-black text-white mb-2 flex items-center gap-3"><span class="material-symbols-outlined text-primaryBlue text-4xl icon-filled">style</span> Flashcard</h2><p class="text-textMuted text-sm">Học lặp lại ngắt quãng (SM-2 Anki) để ghi nhớ dài hạn.</p></div>
+                    <div class="bg-cardBg border border-gray-700 px-5 py-3 rounded-2xl flex items-center gap-3 shadow-lg shrink-0"><span class="text-textMuted text-xs font-bold uppercase tracking-widest">Đến hạn:</span><span class="text-primaryBlue font-black text-xl" id="fc-counter">0 thẻ</span></div>
+                </header>
+
+                <div id="fc-empty" class="text-center py-24 hidden bg-cardBg rounded-[32px] border border-gray-700/30 shadow-xl"><span class="material-symbols-outlined text-6xl text-successGreen mb-6">task_alt</span><h3 class="text-2xl font-bold text-white mb-2">Đã xong nhiệm vụ!</h3><p class="text-textMuted">Bạn không có thẻ nào cần ôn tập lúc này.</p></div>
 
                 <div id="fc-container" class="flex-1 flex flex-col items-center w-full hidden">
                     <div class="fc-scene w-full max-w-4xl" onclick="flipFlashcard()">
                         <div class="fc-card" id="fc-card-inner">
                             <div class="fc-face fc-front">
                                 <div class="absolute top-6 left-8 text-[10px] font-black text-primaryBlue uppercase tracking-[2px] bg-primaryBlue/10 px-3 py-1 rounded-lg border border-primaryBlue/20" id="fc-topic">CHỦ ĐỀ</div>
-                                <!-- [SỬA 5] Thêm ảnh cho flashcard -->
-                                <div id="fc-image-box" class="hidden mb-4 mt-2">
-                                    <img id="fc-image" src="" alt="Hình ảnh" class="max-w-full max-h-48 rounded-xl border border-gray-700 object-contain mx-auto">
-                                </div>
+                                <div id="fc-image-front" class="hidden flex justify-center mb-4 mt-8"></div>
                                 <h3 class="font-serif text-xl md:text-2xl text-gray-200 leading-relaxed text-center italic px-4 mt-4" id="fc-q">Câu hỏi...</h3>
-                                <div class="absolute bottom-6 left-0 w-full text-center text-textMuted text-xs font-bold uppercase tracking-widest animate-pulse flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">touch_app</span> Chạm để lật thẻ</div>
-                                <!-- Thông tin SRS: Interval hiện tại -->
-                                <div id="fc-srs-info" class="absolute top-6 right-8 text-[10px] font-bold text-textMuted bg-gray-800/50 px-2 py-1 rounded-lg"></div>
+                                <div class="mt-auto pt-6 w-full text-center text-textMuted text-xs font-bold uppercase tracking-widest animate-pulse flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">touch_app</span> Chạm để lật thẻ</div>
                             </div>
                             <div class="fc-face fc-back">
-                                <div class="absolute top-6 left-8 text-[10px] font-black text-successGreen uppercase tracking-[2px] bg-successGreen/10 px-3 py-1 rounded-lg border border-successGreen/20">ĐÁP ÁN ĐÚNG</div>
-                                <div class="bg-mainBg/50 p-5 rounded-2xl border border-primaryBlue/30 mb-4 mt-6"><h4 class="text-white font-bold text-lg md:text-xl" id="fc-a">Đáp án...</h4></div>
-                                <div class="flex items-start gap-3"><span class="material-symbols-outlined text-primaryBlue mt-1">lightbulb</span><p class="text-gray-300 text-sm leading-relaxed font-medium text-left" id="fc-exp">Giải thích...</p></div>
+                                <div class="absolute top-6 left-8 text-[10px] font-black text-successGreen uppercase tracking-[2px] bg-successGreen/10 px-3 py-1 rounded-lg border border-successGreen/20">MẶT SAU</div>
+                                <div class="bg-mainBg/50 p-5 rounded-2xl border border-primaryBlue/30 mb-4 mt-8"><h4 class="text-white font-bold text-lg" id="fc-a">Đáp án...</h4></div>
+                                <div id="fc-image-back" class="hidden flex justify-center mb-4"></div>
+                                <div class="flex items-start gap-3 mt-auto pt-4"><span class="material-symbols-outlined text-primaryBlue mt-1">lightbulb</span><p class="text-gray-300 text-sm leading-relaxed font-medium text-left" id="fc-exp">Giải thích...</p></div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- [SỬA 3] 4 nút SRS thay vì 2 nút cũ -->
-                    <div class="flex gap-3 mt-8 w-full max-w-4xl px-2 opacity-50 pointer-events-none transition-opacity" id="fc-actions">
-                        <button onclick="fcSRS('again')" class="srs-btn srs-again">
+                    <div class="flex flex-wrap sm:flex-nowrap gap-3 mt-8 w-full max-w-4xl px-2 opacity-50 pointer-events-none transition-opacity" id="fc-actions">
+                        <button onclick="sm2Answer('again')" class="srs-btn srs-again w-[48%] sm:w-auto">
                             <span class="material-symbols-outlined text-[20px]">replay</span>
                             <span class="srs-label">Lại</span>
-                            <span class="srs-time" id="srs-time-again">&lt;1 phút</span>
+                            <span class="srs-time" id="srs-time-again">&lt; 1 Phút</span>
                         </button>
-                        <button onclick="fcSRS('hard')" class="srs-btn srs-hard">
+                        <button onclick="sm2Answer('hard')" class="srs-btn srs-hard w-[48%] sm:w-auto">
                             <span class="material-symbols-outlined text-[20px]">priority_high</span>
                             <span class="srs-label">Khó</span>
-                            <span class="srs-time" id="srs-time-hard">10 phút</span>
+                            <span class="srs-time" id="srs-time-hard">10 Phút</span>
                         </button>
-                        <button onclick="fcSRS('good')" class="srs-btn srs-good">
+                        <button onclick="sm2Answer('good')" class="srs-btn srs-good w-[48%] sm:w-auto">
                             <span class="material-symbols-outlined text-[20px]">thumb_up</span>
                             <span class="srs-label">Tốt</span>
-                            <span class="srs-time" id="srs-time-good">1 ngày</span>
+                            <span class="srs-time" id="srs-time-good">1 Ngày</span>
                         </button>
-                        <button onclick="fcSRS('easy')" class="srs-btn srs-easy">
+                        <button onclick="sm2Answer('easy')" class="srs-btn srs-easy w-[48%] sm:w-auto">
                             <span class="material-symbols-outlined text-[20px]">star</span>
                             <span class="srs-label">Dễ</span>
-                            <span class="srs-time" id="srs-time-easy">4 ngày</span>
+                            <span class="srs-time" id="srs-time-easy">4 Ngày</span>
                         </button>
                     </div>
-                    <p class="text-textMuted text-xs mt-4 text-center">Hãy lật thẻ để xem đáp án trước khi đánh giá mức độ ghi nhớ.</p>
                 </div>
             </div>
 
-            <!-- LEADERBOARD -->
             <div id="view-leaderboard" class="view-section p-6 md:p-10 max-w-5xl mx-auto w-full">
-                <div class="text-center mb-14"><h2 class="text-4xl font-extrabold text-white mb-2">Bảng Danh Dự</h2><p class="text-textMuted text-sm">Vinh danh những bác sĩ xuất sắc nhất hệ thống</p></div>
+                <div class="text-center mb-14"><h2 class="text-4xl font-extrabold text-white mb-2">Bảng Vàng</h2><p class="text-textMuted text-sm">Vinh danh những bác sĩ xuất sắc nhất hệ thống</p></div>
                 
-                <div class="flex justify-center items-end gap-4 md:gap-6 mb-14" id="lb-podium">
-                    <div class="w-56 md:w-64 bg-cardBg rounded-[24px] p-6 text-center border border-gray-700 shadow-lg relative">
-                        <div class="relative w-18 h-18 mx-auto mb-4"><div class="w-16 h-16 mx-auto rounded-full border-4 border-cardBg bg-gray-800 flex items-center justify-center text-2xl" id="lb-p2-ava">👨‍⚕️</div><span class="absolute -bottom-2 right-0 bg-gray-200 text-gray-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full border-2 border-cardBg">#2</span></div>
-                        <h3 class="text-white font-bold mb-1 text-sm" id="lb-p2-name">...</h3><div class="text-cyan-400 font-black text-2xl mb-1" id="lb-p2-pct">0%</div><div class="text-textMuted text-[10px] font-bold tracking-widest uppercase">Độ chính xác</div>
+                <div class="flex flex-col md:flex-row justify-center items-center md:items-end gap-6 mb-16" id="lb-podium">
+                    <div class="w-64 bg-cardBg rounded-[24px] p-6 text-center border border-gray-700 shadow-lg relative order-2 md:order-1">
+                        <div class="relative w-20 h-20 mx-auto mb-4"><div class="w-full h-full rounded-full border-4 border-cardBg bg-gray-800 flex items-center justify-center text-3xl" id="lb-p2-ava">👨‍⚕️</div><span class="absolute -bottom-2 right-0 bg-gray-200 text-gray-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full border-2 border-cardBg">#2</span></div>
+                        <h3 class="text-white font-bold mb-1 truncate" id="lb-p2-name">...</h3><div class="text-cyan-400 font-black text-3xl mb-1" id="lb-p2-pct">0%</div><div class="text-textMuted text-[10px] font-bold tracking-widest uppercase">Độ chính xác</div>
                     </div>
-                    <div class="w-64 md:w-72 bg-cardBg rounded-[32px] p-8 text-center border border-primaryBlue/50 shadow-[0_0_30px_rgba(59,130,246,0.15)] relative z-10 scale-105">
+                    <div class="w-72 bg-cardBg rounded-[32px] p-8 text-center border border-primaryBlue/50 shadow-[0_0_30px_rgba(59,130,246,0.15)] relative z-10 md:scale-105 order-1 md:order-2">
                         <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-200 text-blue-900 text-[10px] font-black uppercase tracking-wider px-4 py-1.5 rounded-full shadow-md whitespace-nowrap">Dẫn đầu</div>
                         <div class="relative w-24 h-24 mx-auto mt-4 mb-4"><div class="w-full h-full rounded-full border-[4px] border-blue-400 bg-gray-800 flex items-center justify-center text-4xl" id="lb-p1-ava">👨‍⚕️</div><span class="absolute -bottom-2 right-2 bg-blue-200 text-blue-900 text-xs font-black w-6 h-6 flex items-center justify-center rounded-full border-2 border-cardBg">1</span></div>
-                        <h3 class="text-white font-extrabold text-xl mb-1" id="lb-p1-name">...</h3><div class="text-blue-100 font-black text-4xl mb-2" id="lb-p1-pct">0%</div><div class="text-primaryBlue text-[10px] font-bold tracking-widest uppercase">Độ chính xác cao nhất</div>
+                        <h3 class="text-white font-extrabold text-xl mb-1 truncate" id="lb-p1-name">...</h3><div class="text-blue-100 font-black text-4xl mb-2" id="lb-p1-pct">0%</div><div class="text-primaryBlue text-[10px] font-bold tracking-widest uppercase">Độ chính xác cao nhất</div>
                     </div>
-                    <div class="w-56 md:w-64 bg-cardBg rounded-[24px] p-6 text-center border border-gray-700 shadow-lg relative">
-                        <div class="relative w-18 h-18 mx-auto mb-4"><div class="w-16 h-16 mx-auto rounded-full border-4 border-cardBg bg-gray-800 flex items-center justify-center text-2xl" id="lb-p3-ava">👨‍⚕️</div><span class="absolute -bottom-2 right-0 bg-orange-200 text-orange-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full border-2 border-cardBg">#3</span></div>
-                        <h3 class="text-white font-bold mb-1 text-sm" id="lb-p3-name">...</h3><div class="text-warnOrange font-black text-2xl mb-1" id="lb-p3-pct">0%</div><div class="text-textMuted text-[10px] font-bold tracking-widest uppercase">Độ chính xác</div>
+                    <div class="w-64 bg-cardBg rounded-[24px] p-6 text-center border border-gray-700 shadow-lg relative order-3">
+                        <div class="relative w-20 h-20 mx-auto mb-4"><div class="w-full h-full rounded-full border-4 border-cardBg bg-gray-800 flex items-center justify-center text-3xl" id="lb-p3-ava">👨‍⚕️</div><span class="absolute -bottom-2 right-0 bg-orange-200 text-orange-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full border-2 border-cardBg">#3</span></div>
+                        <h3 class="text-white font-bold mb-1 truncate" id="lb-p3-name">...</h3><div class="text-warnOrange font-black text-3xl mb-1" id="lb-p3-pct">0%</div><div class="text-textMuted text-[10px] font-bold tracking-widest uppercase">Độ chính xác</div>
                     </div>
                 </div>
 
-                <div class="bg-cardBg rounded-3xl overflow-hidden border border-gray-700 max-w-4xl mx-auto mb-20 shadow-xl">
-                    <table class="w-full text-left">
-                        <thead class="text-textMuted text-[10px] uppercase tracking-widest font-bold border-b border-gray-700/50 bg-mainBg/30"><tr><th class="py-5 px-6">Hạng</th><th class="py-5 px-6">Bác sĩ</th><th class="py-5 px-6 text-center">Khối Đề</th><th class="py-5 px-6 text-right">Độ chính xác</th></tr></thead>
+                <div class="bg-cardBg rounded-3xl overflow-hidden border border-gray-700 max-w-4xl mx-auto mb-20 shadow-xl overflow-x-auto">
+                    <table class="w-full text-left min-w-[600px]">
+                        <thead class="text-textMuted text-[10px] uppercase tracking-widest font-bold border-b border-gray-700/50 bg-mainBg/30"><tr><th class="py-5 px-6">Hạng</th><th class="py-5 px-6">Bác sĩ</th><th class="py-5 px-6 text-center">Chủ Đề</th><th class="py-5 px-6 text-right">Độ chính xác</th></tr></thead>
                         <tbody class="text-sm font-semibold divide-y divide-gray-700/50" id="lb-table"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- PROFILE -->
             <div id="view-profile" class="view-section w-full h-full p-6 md:p-10 overflow-y-auto">
                 <div class="max-w-5xl mx-auto w-full">
-                    <header class="mb-10"><h2 class="text-3xl font-black text-white mb-1">Hồ sơ cá nhân</h2><p class="text-textMuted text-sm font-medium">Quản lý hồ sơ và theo dõi lịch sử ôn luyện</p></header>
+                    <header class="mb-10"><h2 class="text-3xl font-black text-white mb-1">Hồ sơ cá nhân</h2><p class="text-textMuted text-sm font-medium">Quản lý định danh và theo dõi tiến trình học tập</p></header>
                     
                     <div class="bg-cardBg rounded-[32px] p-8 md:p-10 border border-gray-700/30 shadow-xl relative overflow-hidden mb-12">
                         <div class="absolute -top-10 -right-10 w-40 h-40 bg-primaryBlue/5 rounded-full blur-[60px]"></div>
@@ -501,17 +493,17 @@
                             <div class="flex-1 w-full">
                                 <label class="text-[10px] font-black text-textMuted uppercase tracking-[2px] mb-2 block">Tên hiển thị</label>
                                 <input type="text" id="prof-name" class="w-full bg-mainBg border border-gray-700 rounded-2xl px-6 py-4 text-white font-bold outline-none focus:border-primaryBlue transition-all mb-4 text-lg">
-                                <div id="ava-select-box" class="hidden bg-mainBg p-4 rounded-2xl border border-gray-700 flex gap-2 overflow-x-auto mb-6 shadow-inner"></div>
+                                <div id="ava-select-box" class="hidden bg-mainBg p-4 rounded-2xl border border-gray-700 flex gap-2 overflow-x-auto mb-6 shadow-inner custom-scrollbar"></div>
                                 <button onclick="saveProfile()" class="bg-primaryBlue text-white font-black px-10 py-3.5 rounded-2xl hover:brightness-110 shadow-[0_10px_20px_rgba(59,130,246,0.2)] text-sm transition-all w-full sm:w-auto">Lưu Thay Đổi</button>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex justify-between items-center mb-6"><h3 class="text-white font-black text-2xl">Lịch sử ôn luyện</h3></div>
+                    <div class="flex justify-between items-center mb-6"><h3 class="text-white font-black text-2xl">Lịch sử bài thi</h3></div>
                     <div class="bg-cardBg rounded-[32px] border border-gray-700/30 overflow-hidden shadow-2xl mb-12">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left min-w-[600px]">
-                                <thead class="border-b border-gray-700/50 bg-mainBg/30"><tr class="text-textMuted text-[10px] font-black uppercase tracking-[2px]"><th class="py-5 px-6">Thời gian</th><th class="py-5 px-4">Chủ đề</th><th class="py-5 px-4">Điểm số</th><th class="py-5 px-4">Trạng thái</th></tr></thead>
+                                <thead class="border-b border-gray-700/50 bg-mainBg/30"><tr class="text-textMuted text-[10px] font-black uppercase tracking-[2px]"><th class="py-5 px-6">Thời gian</th><th class="py-5 px-4">Chủ đề</th><th class="py-5 px-4">Điểm</th><th class="py-5 px-4">Trạng thái</th></tr></thead>
                                 <tbody class="divide-y divide-gray-700/30 text-sm font-semibold" id="history-table">
                                     <tr><td colspan="4" class="py-8 text-center text-textMuted">Chưa có lịch sử làm bài.</td></tr>
                                 </tbody>
@@ -520,11 +512,10 @@
                     </div>
                     
                     <h3 class="text-white font-black text-xl mb-6">Huy hiệu đạt được</h3>
-                    <div id="badges-box" class="grid grid-cols-2 md:grid-cols-4 gap-4 pb-10"></div>
+                    <div id="badges-box" class="grid grid-cols-2 md:grid-cols-4 gap-4 pb-20"></div>
                 </div>
             </div>
 
-            <!-- SETTINGS -->
             <div id="view-settings" class="view-section w-full h-full p-6 md:p-10 overflow-y-auto">
                 <div class="max-w-5xl mx-auto w-full pb-20">
                     <header class="mb-10"><h2 class="text-3xl font-black text-white mb-1">Cài đặt hệ thống</h2><p class="text-textMuted text-sm font-medium">Tùy chỉnh môi trường ôn luyện theo sở thích của bạn.</p></header>
@@ -552,7 +543,7 @@
                             <h3 class="text-white font-bold text-lg mb-6 flex items-center gap-2"><span class="material-symbols-outlined text-textMuted">notifications</span> Thông báo</h3>
                             <div class="space-y-6">
                                 <div class="flex justify-between items-center">
-                                    <div><div class="text-white font-bold text-sm">Nhắc ôn hàng ngày</div><div class="text-textMuted text-[10px]">Nhắc nhở thực hiện mục tiêu học tập</div></div>
+                                    <div><div class="text-white font-bold text-sm">Nhắc ôn hàng ngày</div><div class="text-textMuted text-[10px]">Cảnh báo mục tiêu lâm sàng</div></div>
                                     <div class="w-10 h-6 bg-primaryBlue rounded-full relative cursor-pointer"><div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div>
                                 </div>
                                 <div class="flex justify-between items-center">
@@ -632,7 +623,7 @@ setInterval(() => {
 }, 1000);
 
 // ========================
-// [SỬA 2] TOGGLE SIDEBAR
+// TOGGLE SIDEBAR
 // ========================
 let sidebarOpen = false;
 function toggleSidebar() {
@@ -647,7 +638,6 @@ function toggleSidebar() {
         sidebar.classList.toggle('sidebar-collapsed');
     }
 }
-// Đóng sidebar khi chuyển view trên mobile
 function closeSidebarMobile() {
     if (window.innerWidth <= 768) {
         document.getElementById('main-sidebar').classList.remove('open');
@@ -681,12 +671,13 @@ function switchView(id) {
 
     const titleMap = {
         'dashboard':'Trang chủ', 'leaderboard':'Bảng xếp hạng', 'settings':'Cài đặt',
-        'profile':'Hồ sơ cá nhân', 'flashcard':'Góc Mù', 'result':'Kết quả'
+        'profile':'Hồ sơ cá nhân', 'blindspot':'Góc mù', 'flashcard':'Flashcard', 'result':'Kết quả'
     };
     if (document.getElementById('topbar-title')) document.getElementById('topbar-title').textContent = titleMap[id] || id;
 
     if(id === 'leaderboard') loadLeaderboardUI();
     if(id === 'flashcard') renderFlashcards();
+    if(id === 'blindspot') renderBlindspot();
     if(id === 'profile') setupProfileView();
 }
 
@@ -718,7 +709,7 @@ document.getElementById('file-input').onchange = e => {
     f.name.endsWith('.csv') ? r.readAsText(f,'UTF-8') : r.readAsArrayBuffer(f);
 };
 
-// [SỬA 4+5] parseCSV & parseXLSX: đọc cột image
+// Đọc file CSV, Excel -> Cột 'image' sẽ tự động lưu vào obj.image
 function parseCSV(text) {
     const lines = text.trim().split('\n');
     const h = lines[0].split(',').map(x=>x.trim().toLowerCase());
@@ -753,7 +744,8 @@ function parseXLSX(buf) {
 // BỘ LỌC 3 TẦNG
 // ========================
 function loadQ(rows) {
-    allQ = rows.filter(r=>r.question&&r.a&&r.b&&r.answer);
+    // Chỉ lấy câu có a, b, answer hoặc ít nhất câu hỏi có hình ảnh
+    allQ = rows.filter(r=>(r.question||r.image)&&r.a&&r.b&&r.answer);
     allQ.forEach((q,i)=>q._id=q._id||`q_${Date.now()}_${i}`);
     const subjects = [...new Set(allQ.map(q=>q.subject||'Chung').filter(Boolean))];
     selSubject = subjects[0]||""; selTopics.clear(); selLevels.clear();
@@ -823,13 +815,24 @@ function startQuiz() {
     const n = Math.min(parseInt(document.getElementById('count-input').value)||f.length, f.length);
     activeQ = f.sort(()=>Math.random()-0.5).slice(0,n);
     currentIdx=0; userAnswers={}; skippedQ.clear(); wrongQ=[]; startTime=Date.now();
+    
     switchView('quiz');
-    if(quizMode==='exam'){
+    
+    // Ẩn/hiện Sidebar tùy theo chế độ
+    const quizSidebar = document.getElementById('quiz-sidebar');
+    const qTitleMobile = document.getElementById('q-title-mobile');
+    
+    if(quizMode === 'exam') {
+        quizSidebar.classList.remove('hidden'); quizSidebar.classList.add('md:flex');
+        qTitleMobile.parentElement.classList.remove('hidden');
         document.getElementById('btn-skip').classList.remove('hidden'); document.getElementById('btn-skip').style.display='flex';
         document.getElementById('btn-exam-submit').classList.remove('hidden'); document.getElementById('btn-exam-submit').style.display='block';
         document.getElementById('q-timer-box').classList.remove('hidden');
         startTimer(Math.ceil(activeQ.length*0.9));
     } else {
+        // Chế độ Luyện Tập: Ẩn cột trái
+        quizSidebar.classList.add('hidden'); quizSidebar.classList.remove('md:flex');
+        qTitleMobile.parentElement.classList.remove('hidden');
         document.getElementById('btn-skip').classList.add('hidden');
         document.getElementById('btn-exam-submit').classList.add('hidden');
         document.getElementById('q-timer-box').classList.add('hidden');
@@ -847,19 +850,22 @@ function startTimer(m) {
     },1000);
 }
 
-// [SỬA 5] renderQuestion: hiển thị ảnh nếu có
 function renderQuestion() {
     const q=activeQ[currentIdx];
-    document.getElementById('q-title').textContent=`CÂU ${currentIdx+1} / ${activeQ.length}`;
+    const textQTitle = `CÂU ${currentIdx+1} / ${activeQ.length}`;
+    document.getElementById('q-title').textContent = textQTitle;
+    document.getElementById('q-title-mobile').textContent = textQTitle;
+    
     document.getElementById('q-meta').textContent=q.topic||q.tab||'CHUNG';
-    document.getElementById('q-text').textContent=`"${q.question}"`;
+    document.getElementById('q-text').textContent = q.question ? `"${q.question}"` : "";
+    
     document.getElementById('q-pct').textContent = Math.round((currentIdx/activeQ.length)*100)+'%';
     document.getElementById('q-bar').style.width = Math.round((currentIdx/activeQ.length)*100)+'%';
     
-    // Hiển thị ảnh câu hỏi nếu có cột image
+    // Xử lý ảnh trong Câu hỏi
     const imgBox = document.getElementById('q-image-box');
     const imgEl = document.getElementById('q-image');
-    if(q.image && q.image.trim()) {
+    if(q.image && q.image.trim() !== '') {
         imgEl.src = q.image.trim();
         imgBox.classList.remove('hidden');
         imgEl.onerror = () => imgBox.classList.add('hidden');
@@ -933,20 +939,20 @@ function quizSkip() {
 async function submitQuiz() {
     clearInterval(timerInterval);
     let score=0; let rHTML='';
+    wrongQ=[]; // Reset góc mù cho mẻ test mới
+    
     activeQ.forEach((q,i)=>{
         const uA=userAnswers[i]||"-", cA=q.answer.toUpperCase(), isOk=uA===cA;
         if(isOk) score++;
         else {
             wrongQ.push(q);
-            // Thêm vào Góc Mù nếu chưa có
+            // Thêm vào Flashcard nếu chưa có
             if(!window.userData.blindSpots.find(x=>x._id===q._id)) {
-                // Khởi tạo SRS data cho thẻ mới
-                const newCard = {...q, srs: { interval: 0, easeFactor: 2.5, dueDate: Date.now() }};
+                const newCard = {...q, srs: { interval: 0, easeFactor: 2.5, nextReviewDate: Date.now() }};
                 window.userData.blindSpots.push(newCard);
             }
         }
 
-        // [SỬA 5] Thêm ảnh vào trang kết quả nếu có
         const imgHTML = q.image ? `<img src="${q.image}" alt="Hình ảnh" class="max-w-full max-h-40 rounded-xl border border-gray-700 object-contain mt-3 mb-2" onerror="this.style.display='none'">` : '';
 
         rHTML+=`<div class="bg-[#16181f] rounded-3xl p-6 md:p-8 border ${isOk?'border-successCyan/30':'border-errorRed/30'} mb-6 shadow-lg">
@@ -977,7 +983,6 @@ async function submitQuiz() {
     });
     if(d.history.length>20) d.history.pop();
     
-    // Kiểm tra chuỗi học
     if(d.lastDate!==dStr){
         let y=new Date(); y.setDate(y.getDate()-1);
         const yStr = y.toLocaleDateString('vi-VN',{day:'numeric',month:'numeric',year:'numeric'});
@@ -996,13 +1001,13 @@ async function submitQuiz() {
     document.getElementById('res-score-num').textContent=score;
     document.getElementById('res-score-total').textContent=activeQ.length;
     document.getElementById('res-review-list').innerHTML=rHTML;
-    document.getElementById('btn-retry-wrong').style.display=wrongQ.length?'flex':'none';
+    
     switchView('result');
 }
 
 function retryWrong() {
     activeQ=[...wrongQ].sort(()=>Math.random()-0.5);
-    currentIdx=0; userAnswers={}; skippedQ.clear(); wrongQ=[]; startTime=Date.now();
+    currentIdx=0; userAnswers={}; skippedQ.clear(); startTime=Date.now();
     switchView('quiz');
     if(quizMode==='exam'){
         document.getElementById('q-timer-box').classList.remove('hidden');
@@ -1012,196 +1017,174 @@ function retryWrong() {
 }
 
 // ========================
-// [SỬA 3] FLASHCARD + SRS ANKI-LIKE
+// GÓC MÙ (Chỉ xem câu sai của test gần nhất)
+// ========================
+function renderBlindspot() {
+    const list = document.getElementById('blindspot-list');
+    list.innerHTML = '';
+    
+    if(!wrongQ || wrongQ.length === 0) {
+        document.getElementById('blindspot-empty').classList.remove('hidden');
+        list.classList.add('hidden');
+    } else {
+        document.getElementById('blindspot-empty').classList.add('hidden');
+        list.classList.remove('hidden');
+        
+        wrongQ.forEach((q, i) => {
+            const imgHTML = q.image ? `<img src="${q.image}" class="max-w-full max-h-40 rounded-xl border border-gray-700 object-contain mt-3 mb-2">` : '';
+            const cA = q.answer.toUpperCase();
+            list.innerHTML += `
+            <div class="bg-cardBg rounded-3xl p-6 border border-warnOrange/30 mb-6 shadow-lg">
+                <div class="flex justify-between items-center mb-4">
+                    <span class="bg-warnOrange/20 text-warnOrange text-[11px] font-extrabold px-4 py-1.5 rounded-full uppercase">Lỗi sai ${i+1}</span>
+                </div>
+                <p class="font-serif text-lg text-gray-200 mb-2">${q.question}</p>
+                ${imgHTML}
+                <div class="mt-4 flex items-center gap-4 p-4 rounded-2xl border border-successCyan bg-successCyan/10 text-white">
+                    <div class="w-8 h-8 rounded-lg bg-successCyan text-cyan-950 flex items-center justify-center text-xs font-bold">${cA}</div>
+                    <span class="font-bold flex-1 text-[15px]">${q[cA.toLowerCase()]}</span>
+                </div>
+                ${q.explanation ? `<div class="mt-5 pt-4 border-t border-gray-800 text-gray-400 text-sm flex items-start gap-2"><span class="material-symbols-outlined text-[16px] text-textMuted mt-0.5">lightbulb</span><p class="leading-relaxed">${q.explanation}</p></div>`:''}
+            </div>`;
+        });
+    }
+}
+
+// ========================
+// FLASHCARD (SM-2 ANKI SRS)
 // ========================
 let fcIdx=0;
 let fcIsFlipped = false;
+let activeFlashcards = [];
 
-// Thuật toán SRS đơn giản (giống SM-2)
-// interval: ngày, easeFactor: hệ số dễ, dueDate: timestamp
-function calcNextReview(card, rating) {
-    let srs = card.srs || { interval: 0, easeFactor: 2.5, dueDate: Date.now() };
-    let { interval, easeFactor } = srs;
+function calcSM2(srs, rating) {
+    let interval = srs.interval || 0;
+    let ease = srs.easeFactor || 2.5;
     const now = Date.now();
-    let nextInterval, nextEase, label;
+    let label = '';
 
-    if(rating === 'again') {
-        nextInterval = 0; // < 1 phút, hiển thị lại ngay
-        nextEase = Math.max(1.3, easeFactor - 0.2);
-        label = 'Dưới 1 phút';
-    } else if(rating === 'hard') {
-        nextInterval = Math.max(1, interval * 1.2);
-        nextEase = Math.max(1.3, easeFactor - 0.15);
-        label = nextInterval < 1 ? 'Hôm nay' : Math.round(nextInterval) + ' ngày';
-    } else if(rating === 'good') {
-        nextInterval = interval === 0 ? 1 : interval < 1 ? 4 : interval * easeFactor;
-        nextEase = easeFactor;
-        label = nextInterval < 1 ? 'Hôm nay' : Math.round(nextInterval) + ' ngày';
-    } else { // easy
-        nextInterval = interval === 0 ? 4 : interval * easeFactor * 1.3;
-        nextEase = Math.min(4.0, easeFactor + 0.15);
-        label = Math.round(nextInterval) + ' ngày';
+    if (rating === 'again') {
+        interval = 0; // 0 ngày -> < 1 phút
+        ease = Math.max(1.3, ease - 0.2);
+        label = '< 1 Phút';
+    } else if (rating === 'hard') {
+        interval = Math.max(0.1, interval * 1.2); // Khoảng 10 phút nếu interval nhỏ
+        ease = Math.max(1.3, ease - 0.15);
+        label = interval < 1 ? '10 Phút' : Math.round(interval) + ' Ngày';
+    } else if (rating === 'good') {
+        interval = (interval === 0 || interval < 1) ? 1 : interval * ease;
+        label = interval < 1 ? '1 Ngày' : Math.round(interval) + ' Ngày';
+    } else if (rating === 'easy') {
+        interval = (interval === 0 || interval < 1) ? 4 : interval * ease * 1.3;
+        ease = Math.min(4.0, ease + 0.15);
+        label = Math.round(interval) + ' Ngày';
     }
 
-    const dueDate = rating === 'again'
-        ? now + 60 * 1000 // 1 phút
-        : now + Math.max(1, Math.round(nextInterval)) * 24 * 60 * 60 * 1000;
+    const nextReviewDate = rating === 'again' 
+        ? now + 60 * 1000 
+        : (rating === 'hard' && interval < 1) 
+            ? now + 10 * 60 * 1000 
+            : now + Math.round(interval) * 24 * 60 * 60 * 1000;
 
-    return { interval: nextInterval, easeFactor: nextEase, dueDate, label };
-}
-
-function getSRSTimeLabels(card) {
-    const srs = card.srs || { interval: 0, easeFactor: 2.5 };
-    const get = r => calcNextReview(card, r).label;
-    return { again: '<1 phút', hard: get('hard'), good: get('good'), easy: get('easy') };
+    return { interval, easeFactor: ease, nextReviewDate, label };
 }
 
 function renderFlashcards() {
-    // Lọc ra các thẻ đến hạn ôn (dueDate <= now)
     const now = Date.now();
-    const arr = (window.userData.blindSpots||[]).filter(c => !c.srs || c.srs.dueDate <= now);
-    const total = (window.userData.blindSpots||[]).length;
+    activeFlashcards = (window.userData.blindSpots||[]).filter(c => !c.srs || !c.srs.nextReviewDate || c.srs.nextReviewDate <= now);
     
-    document.getElementById('fc-counter').textContent=`${arr.length} / ${total} thẻ`;
+    document.getElementById('fc-counter').textContent = `${activeFlashcards.length} thẻ`;
 
-    if(!arr.length){
+    if(!activeFlashcards.length){
         document.getElementById('fc-empty').classList.remove('hidden');
         document.getElementById('fc-container').classList.add('hidden');
-        
-        // Hiển thị thời gian ôn tiếp theo
-        const allCards = window.userData.blindSpots||[];
-        if(allCards.length > 0) {
-            const nextDue = Math.min(...allCards.map(c=>c.srs?.dueDate||0));
-            const diffMs = nextDue - now;
-            let timeStr = '';
-            if(diffMs <= 0) timeStr = 'ngay bây giờ';
-            else if(diffMs < 3600000) timeStr = Math.ceil(diffMs/60000) + ' phút nữa';
-            else if(diffMs < 86400000) timeStr = Math.ceil(diffMs/3600000) + ' giờ nữa';
-            else timeStr = Math.ceil(diffMs/86400000) + ' ngày nữa';
-            
-            document.getElementById('fc-next-review').classList.remove('hidden');
-            document.getElementById('fc-next-review-text').textContent = `Lần ôn tiếp theo: ${timeStr}`;
-        }
     } else {
         document.getElementById('fc-empty').classList.add('hidden');
-        document.getElementById('fc-next-review').classList.add('hidden');
         document.getElementById('fc-container').classList.remove('hidden');
-        fcIdx=0; showCard();
+        fcIdx = 0; showFlashcard();
     }
 }
 
-function getDueCards() {
-    const now = Date.now();
-    return (window.userData.blindSpots||[]).filter(c => !c.srs || c.srs.dueDate <= now);
-}
-
-function showCard() {
-    const arr = getDueCards();
-    if(!arr.length) return renderFlashcards();
-    if(fcIdx>=arr.length) fcIdx=0;
-    const q=arr[fcIdx];
+function showFlashcard() {
+    if(fcIdx >= activeFlashcards.length) return renderFlashcards();
+    const q = activeFlashcards[fcIdx];
     fcIsFlipped = false;
+    
     document.getElementById('fc-card-inner').classList.remove('is-flipped');
-    document.getElementById('fc-topic').textContent=q.topic||q.subject||'Chung';
-    document.getElementById('fc-q').textContent=`"${q.question}"`;
-    const ans=q.answer.toUpperCase();
-    document.getElementById('fc-a').textContent=`${ans}. ${q[ans.toLowerCase()]}`;
-    document.getElementById('fc-exp').textContent=q.explanation||'Không có giải thích chi tiết.';
+    document.getElementById('fc-topic').textContent = q.topic || q.subject || 'Chung';
+    document.getElementById('fc-q').textContent = q.question ? `"${q.question}"` : "";
 
-    // [SỬA 5] Hiển thị ảnh trong flashcard
-    const fcImgBox = document.getElementById('fc-image-box');
-    const fcImg = document.getElementById('fc-image');
-    if(q.image && q.image.trim()) {
-        fcImg.src = q.image.trim();
-        fcImgBox.classList.remove('hidden');
-        fcImg.onerror = () => fcImgBox.classList.add('hidden');
+    // Xử lý ảnh linh hoạt
+    const imgFront = document.getElementById('fc-image-front');
+    const imgBack = document.getElementById('fc-image-back');
+    if(q.image && q.image.trim() !== '') {
+        imgFront.innerHTML = `<img src="${q.image.trim()}" class="max-h-48 rounded-lg object-contain border border-gray-700/50 shadow-lg">`;
+        imgFront.classList.remove('hidden');
+        imgBack.innerHTML = `<img src="${q.image.trim()}" class="max-h-32 rounded-lg object-contain border border-gray-700/50 shadow-lg mt-2">`;
+        imgBack.classList.remove('hidden');
     } else {
-        fcImgBox.classList.add('hidden');
-        fcImg.src='';
+        imgFront.classList.add('hidden'); imgFront.innerHTML = '';
+        imgBack.classList.add('hidden'); imgBack.innerHTML = '';
     }
 
-    // Hiển thị thông tin SRS
-    const srsInfo = document.getElementById('fc-srs-info');
-    if(q.srs && q.srs.interval >= 1) {
-        srsInfo.textContent = `Chu kỳ: ${Math.round(q.srs.interval)} ngày`;
-    } else {
-        srsInfo.textContent = 'Thẻ mới';
-    }
+    const ans = q.answer.toUpperCase();
+    document.getElementById('fc-a').textContent = `${ans}. ${q[ans.toLowerCase()]}`;
+    document.getElementById('fc-exp').textContent = q.explanation || 'Không có giải thích chi tiết.';
 
-    // Cập nhật nhãn thời gian cho 4 nút SRS
-    const labels = getSRSTimeLabels(q);
-    document.getElementById('srs-time-again').textContent = labels.again;
-    document.getElementById('srs-time-hard').textContent = labels.hard;
-    document.getElementById('srs-time-good').textContent = labels.good;
-    document.getElementById('srs-time-easy').textContent = labels.easy;
+    // Hiển thị nhãn thời gian dự kiến trên 4 nút
+    const srs = q.srs || { interval: 0, easeFactor: 2.5 };
+    document.getElementById('srs-time-again').textContent = calcSM2(srs, 'again').label;
+    document.getElementById('srs-time-hard').textContent = calcSM2(srs, 'hard').label;
+    document.getElementById('srs-time-good').textContent = calcSM2(srs, 'good').label;
+    document.getElementById('srs-time-easy').textContent = calcSM2(srs, 'easy').label;
 
-    // Khóa nút cho đến khi lật thẻ
-    lockSRSButtons();
+    document.getElementById('fc-actions').classList.add('opacity-50', 'pointer-events-none');
 }
 
 function flipFlashcard() {
     fcIsFlipped = !fcIsFlipped;
     document.getElementById('fc-card-inner').classList.toggle('is-flipped', fcIsFlipped);
     if(fcIsFlipped) {
-        unlockSRSButtons();
+        setTimeout(()=>{
+            document.getElementById('fc-actions').classList.remove('opacity-50', 'pointer-events-none');
+        }, 300);
     } else {
-        lockSRSButtons();
+        document.getElementById('fc-actions').classList.add('opacity-50', 'pointer-events-none');
     }
 }
 
-function lockSRSButtons() {
-    const box = document.getElementById('fc-actions');
-    box.style.opacity='0.4'; box.style.pointerEvents='none';
-}
-
-function unlockSRSButtons() {
-    // Delay nhỏ cho hiệu ứng lật thẻ hoàn thành
-    setTimeout(()=>{
-        const box = document.getElementById('fc-actions');
-        box.style.opacity='1'; box.style.pointerEvents='auto';
-    }, 300);
-}
-
-async function fcSRS(rating) {
-    const arr = getDueCards();
-    if(!arr.length) return;
-    const q = arr[fcIdx];
+async function sm2Answer(rating) {
+    if(!activeFlashcards.length) return;
+    const q = activeFlashcards[fcIdx];
     
-    // Tính toán SRS mới
-    const result = calcNextReview(q, rating);
+    // Cập nhật SRS logic
+    const srs = q.srs || { interval: 0, easeFactor: 2.5 };
+    const newSRS = calcSM2(srs, rating);
     
-    // Cập nhật thẻ trong blindSpots
-    const idx = window.userData.blindSpots.findIndex(c=>c._id===q._id);
-    if(idx !== -1) {
-        window.userData.blindSpots[idx].srs = {
-            interval: result.interval,
-            easeFactor: result.easeFactor,
-            dueDate: result.dueDate
+    const dbIdx = window.userData.blindSpots.findIndex(c => c._id === q._id);
+    if(dbIdx !== -1) {
+        window.userData.blindSpots[dbIdx].srs = {
+            interval: newSRS.interval,
+            easeFactor: newSRS.easeFactor,
+            nextReviewDate: newSRS.nextReviewDate
         };
     }
-
-    // Thông báo tương ứng
-    const msgs = {
-        'again': '🔄 Sẽ ôn lại trong vài phút!',
-        'hard':  '⚠️ Đã ghi nhận — sẽ ôn lại sớm!',
-        'good':  '👍 Tốt! Hẹn gặp lại ' + result.label + '!',
-        'easy':  '⭐ Xuất sắc! Lưu vào ghi nhớ dài hạn!'
-    };
-    showToast(msgs[rating]);
-
     await window.syncDataToCloud();
 
-    // Chuyển sang thẻ tiếp theo
-    if(rating === 'again') {
-        // Giữ nguyên index để ôn lại, nhưng chuyển sang thẻ khác trước
-        fcIdx = (fcIdx + 1) % Math.max(1, getDueCards().length);
+    if (rating === 'again') {
+        showToast('🔄 Sẽ ôn lại trong ít phút!');
+        // Đưa thẻ xuống cuối danh sách hiện tại
+        activeFlashcards.push(activeFlashcards.splice(fcIdx, 1)[0]);
+        showFlashcard(); 
     } else {
-        // Thẻ đã học xong, kiểm tra lại danh sách
-        const newArr = getDueCards();
-        if(fcIdx >= newArr.length) fcIdx = 0;
+        showToast(`✅ Đã nhớ! Ôn lại sau ${newSRS.label}`);
+        activeFlashcards.splice(fcIdx, 1);
+        if(activeFlashcards.length > 0) {
+            showFlashcard();
+        } else {
+            renderFlashcards(); // Sẽ hiển thị màn hình trống
+        }
     }
-    
-    renderFlashcards();
 }
 
 // ========================
@@ -1210,7 +1193,7 @@ async function fcSRS(rating) {
 async function loadLeaderboardUI() {
     const data = await window.getLeaderboardData();
     const tb=document.getElementById('lb-table'); tb.innerHTML='';
-    if(!data.length) return tb.innerHTML='<tr><td colspan="4" class="py-8 text-center text-textMuted">Chưa có dữ liệu thi thử nào.</td></tr>';
+    if(!data.length) return tb.innerHTML='<tr><td colspan="4" class="py-8 text-center text-textMuted">Chưa có dữ liệu thi thử.</td></tr>';
     [1,2,3].forEach(rank=>{
         const d=data[rank-1]; if(!d) return;
         document.getElementById(`lb-p${rank}-name`).textContent=d.name;
@@ -1256,7 +1239,7 @@ function setupProfileView() {
 
 async function saveProfile() {
     const name = document.getElementById('prof-name').value.trim();
-    window.userData.name = name || 'Bác sĩ';
+    window.userData.name = name || 'Khách';
     await window.syncDataToCloud();
     updateGlobalUI();
     showToast('✅ Lưu hồ sơ thành công!');
