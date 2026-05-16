@@ -29,35 +29,26 @@
     </script>
 
     <style>
-        /* RESET CƠ BẢN */
         html, body { width: 100vw; height: 100vh; margin: 0; padding: 0; overflow: hidden; background-color: #121319; color: #fff; font-family: '"Be Vietnam Pro"', sans-serif;}
-        
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .icon-filled { font-variation-settings: 'FILL' 1; }
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #2d313f; border-radius: 10px; }
-        
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* GIAO DIỆN ẨN/HIỆN */
         .view-section { display: none; height: 100%; overflow-y: auto; flex-direction: column; }
         .view-section.active { display: flex; animation: fadeIn 0.4s ease; }
-
-        /* View quiz: flex row */
         #view-quiz { display: none; }
         #view-quiz.active { display: flex; flex-direction: row; height: 100%; overflow: hidden; }
 
-        /* Overlays */
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 9999; display: none; align-items: center; justify-content: center; }
         .overlay.active { display: flex; }
         
-        /* Filter Chips */
         .filter-chip { transition: all 0.2s; border: 1px solid #374151; color: #8b949e; background: #1c1e26; padding: 10px 20px; border-radius: 12px; font-weight: 600; font-size: 0.875rem; cursor: pointer;}
         .filter-chip:hover { border-color: #3b82f6; color: #c4d4ff; }
         .filter-chip.active { background: #3b82f6; border-color: #3b82f6; color: #ffffff; box-shadow: 0 4px 15px rgba(59,130,246,0.3); transform: scale(1.05); }
 
-        /* Đáp án */
         .choice-item { transition: all 0.2s; border: 1px solid #374151; background: rgba(255,255,255,0.02); cursor: pointer; }
         .choice-item:hover:not(.locked) { border-color: #3b82f6; background: rgba(59,130,246,0.1); }
         .choice-item.selected { border: 2px solid #3b82f6; background: rgba(59,130,246,0.15); box-shadow: 0 0 20px rgba(59,130,246,0.15); }
@@ -67,7 +58,6 @@
         .choice-item.ans-wrong { border-color: #f43f5e !important; background: rgba(244,63,94,0.1) !important; }
         .choice-item.ans-wrong .c-key { background: #f43f5e !important; color: #fff !important; }
 
-        /* 3D Flashcard */
         .fc-scene { perspective: 1000px; width: 100%; min-height: 350px; cursor: pointer; }
         .fc-card { position: relative; width: 100%; height: 100%; min-height: 350px; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
         .fc-card.is-flipped { transform: rotateY(180deg); }
@@ -75,7 +65,6 @@
         .fc-front { background: #1c1e26; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         .fc-back { background: rgba(59,130,246,0.05); border: 2px solid #3b82f6; transform: rotateY(180deg); }
 
-        /* Nút SRS Flashcard */
         .srs-btn { flex: 1; padding: 12px 8px; border-radius: 16px; font-weight: 800; font-size: 13px; transition: all 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; cursor: pointer; border: 2px solid transparent; }
         .srs-btn:hover { transform: translateY(-2px); filter: brightness(1.15); }
         .srs-btn .srs-label { font-size: 15px; font-weight: 900; }
@@ -85,12 +74,10 @@
         .srs-good  { background: rgba(59,130,246,0.15); border-color: #3b82f6; color: #3b82f6; }
         .srs-easy  { background: rgba(16,185,129,0.15); border-color: #10b981; color: #10b981; }
 
-        /* Toast Notification */
         #toast-box { position: fixed; top: 20px; right: 20px; z-index: 10000; display: flex; flex-direction: column; gap: 10px; }
         .toast { background: #1c1e26; border: 1px solid #3b82f6; padding: 15px 20px; border-radius: 12px; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); transform: translateX(120%); transition: 0.4s; color: #fff; font-weight: bold;}
         .toast.show { transform: translateX(0); }
 
-        /* Sidebar Toggle */
         #main-sidebar { transition: transform 0.3s cubic-bezier(0.4,0,0.2,1); }
         #sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 19; }
         @media (max-width: 768px) {
@@ -110,7 +97,7 @@
 <div id="loader" class="overlay">
     <div class="flex flex-col items-center">
         <div class="w-16 h-16 border-4 border-gray-700 border-t-primaryBlue rounded-full animate-spin mb-4"></div>
-        <div class="text-white font-bold tracking-widest">ĐANG XỬ LÝ DỮ LIỆU...</div>
+        <div class="text-white font-bold tracking-widest">ĐANG ĐỒNG BỘ DỮ LIỆU...</div>
     </div>
 </div>
 
@@ -123,6 +110,38 @@
             <svg width="24" height="24" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path></svg>
             <span id="btn-login-text">Đăng nhập Google</span>
         </button>
+    </div>
+</div>
+
+<div id="create-fc-modal" class="overlay">
+    <div class="bg-cardBg p-8 rounded-[32px] max-w-md w-full border border-gray-700 shadow-2xl relative">
+        <button onclick="document.getElementById('create-fc-modal').classList.remove('active')" class="absolute top-6 right-6 text-textMuted hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        <h3 class="text-2xl font-black text-white mb-6">Tạo Thẻ Ghi Nhớ</h3>
+        <div class="space-y-4">
+            <div>
+                <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-1 block">Chủ đề (Tùy chọn)</label>
+                <input type="text" id="cfc-topic" placeholder="Ví dụ: Triệu chứng học" class="w-full bg-mainBg border border-gray-700 rounded-xl p-3 text-white focus:border-primaryBlue outline-none text-sm">
+            </div>
+            <div>
+                <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-1 block">Mặt trước (Câu hỏi)</label>
+                <textarea id="cfc-q" class="w-full bg-mainBg border border-gray-700 rounded-xl p-3 text-white focus:border-primaryBlue outline-none text-sm" rows="2"></textarea>
+            </div>
+            <div>
+                <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-1 block">Link Ảnh (Tùy chọn)</label>
+                <input type="text" id="cfc-img" placeholder="https://..." class="w-full bg-mainBg border border-gray-700 rounded-xl p-3 text-white focus:border-primaryBlue outline-none text-sm">
+            </div>
+            <div>
+                <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-1 block">Mặt sau (Đáp án / Kiến thức)</label>
+                <textarea id="cfc-a" class="w-full bg-mainBg border border-gray-700 rounded-xl p-3 text-white focus:border-primaryBlue outline-none text-sm" rows="2"></textarea>
+            </div>
+            <div>
+                <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-1 block">Giải thích thêm (Tùy chọn)</label>
+                <textarea id="cfc-exp" class="w-full bg-mainBg border border-gray-700 rounded-xl p-3 text-white focus:border-primaryBlue outline-none text-sm" rows="2"></textarea>
+            </div>
+        </div>
+        <div class="mt-8">
+            <button onclick="saveCustomFc()" class="w-full bg-primaryBlue text-white font-bold py-3.5 rounded-xl hover:brightness-110 transition-all shadow-lg flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[18px]">add_task</span> Lưu Thẻ Ngay</button>
+        </div>
     </div>
 </div>
 
@@ -156,7 +175,7 @@
         window.userData = { uid: user.uid, name: user.displayName, avatar: '👨‍⚕️', totalDone: 0, totalCorrect: 0, streak: 0, lastDate: "", badges: ['rookie'], blindSpots: [], history: [] };
         await setDoc(doc(window.db, "users", user.uid), window.userData);
       }
-      updateGlobalUI(); switchView('dashboard'); fetchAdminDatabase(false);
+      updateGlobalUI(); switchView('dashboard'); fetchDatabaseDual(false);
     } else { document.getElementById('login-modal').classList.add('active'); }
   });
 
@@ -272,24 +291,24 @@
                 </section>
 
                 <section class="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-20">
-                    <div class="col-span-2 bg-cardBg rounded-[32px] p-8 border border-gray-700/30">
+                    <div class="col-span-2 bg-cardBg rounded-[32px] p-8 border border-gray-700/30 flex flex-col">
                         <div class="flex justify-between items-center mb-6">
-                            <div><h3 class="text-xl font-bold text-white flex items-center gap-2"><span class="material-symbols-outlined text-primaryBlue">dns</span> Ngân hàng Đề</h3><p class="text-textMuted text-sm mt-1">Nguồn dữ liệu chuẩn hóa từ Admin</p></div>
+                            <div><h3 class="text-xl font-bold text-white flex items-center gap-2"><span class="material-symbols-outlined text-primaryBlue">dns</span> Dữ liệu Đám Mây</h3><p class="text-textMuted text-sm mt-1">Đồng bộ tự động từ máy chủ của Admin</p></div>
                         </div>
-                        <div onclick="fetchAdminDatabase(true)" class="bg-mainBg/50 rounded-2xl p-10 border-2 border-dashed border-gray-700 flex flex-col items-center justify-center hover:bg-gray-800/50 transition-all cursor-pointer group shadow-inner">
-                            <div class="w-14 h-14 rounded-full border border-gray-600 flex items-center justify-center mb-4 group-hover:border-primaryBlue transition-colors bg-gray-800"><span class="material-symbols-outlined text-textMuted group-hover:text-primaryBlue text-3xl">cloud_download</span></div>
-                            <span class="font-bold text-white text-lg mb-2">Đồng bộ Ngân Hàng Mới</span>
-                            <span class="text-sm text-textMuted">Bấm vào đây để tải dữ liệu câu hỏi từ đám mây</span>
+                        <div onclick="fetchDatabaseDual(true)" class="bg-mainBg/50 rounded-2xl p-10 border-2 border-dashed border-gray-700 flex flex-col items-center justify-center hover:bg-gray-800/50 transition-all cursor-pointer group shadow-inner flex-1">
+                            <div class="w-14 h-14 rounded-full border border-gray-600 flex items-center justify-center mb-4 group-hover:border-primaryBlue transition-colors bg-gray-800"><span class="material-symbols-outlined text-textMuted group-hover:text-primaryBlue text-3xl">cloud_sync</span></div>
+                            <span class="font-bold text-white text-lg mb-2 text-center">Đồng Bộ Toàn Hệ Thống</span>
+                            <span class="text-sm text-textMuted text-center">Tải cả Trắc nghiệm & Flashcard mới nhất</span>
                         </div>
                     </div>
 
                     <div class="col-span-1 border-2 border-dashed border-gray-700 bg-[#15161d] rounded-[32px] p-8 flex flex-col text-center justify-center shadow-inner">
                         <div class="w-16 h-16 bg-gray-800 rounded-2xl flex items-center justify-center text-white mb-6 mx-auto"><span class="material-symbols-outlined text-3xl">upload_file</span></div>
-                        <h3 class="text-xl font-bold text-white mb-2">Tải đề nội bộ</h3>
+                        <h3 class="text-xl font-bold text-white mb-2">Tải Trắc Nghiệm</h3>
                         <p class="text-textMuted text-sm leading-relaxed mb-8">Hỗ trợ file .CSV, .XLSX</p>
                         <label class="w-full bg-accentBlue text-blue-900 font-bold py-4 rounded-xl hover:brightness-105 transition-all cursor-pointer shadow-lg">
                             Chọn tệp tin...
-                            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="hidden">
+                            <input type="file" id="quiz-file-input" accept=".csv,.xlsx,.xls" class="hidden">
                         </label>
                     </div>
                 </section>
@@ -403,9 +422,23 @@
 
             <div id="view-flashcard" class="view-section p-6 md:p-10 max-w-5xl mx-auto w-full">
                 <header class="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-                    <div><h2 class="text-2xl md:text-3xl font-black text-white mb-2 flex items-center gap-3"><span class="material-symbols-outlined text-primaryBlue text-4xl icon-filled">style</span> Flashcard</h2><p class="text-textMuted text-sm">Học lặp lại ngắt quãng (SM-2 Anki) để ghi nhớ dài hạn.</p></div>
-                    <div class="bg-cardBg border border-gray-700 px-5 py-3 rounded-2xl flex items-center gap-3 shadow-lg shrink-0"><span class="text-textMuted text-xs font-bold uppercase tracking-widest">Đến hạn:</span><span class="text-primaryBlue font-black text-xl" id="fc-counter">0 thẻ</span></div>
+                    <div>
+                        <h2 class="text-2xl md:text-3xl font-black text-white mb-2 flex items-center gap-3"><span class="material-symbols-outlined text-primaryBlue text-4xl icon-filled">style</span> Flashcard</h2>
+                        <p class="text-textMuted text-sm">Học lặp lại ngắt quãng (SM-2 Anki) để ghi nhớ dài hạn.</p>
+                    </div>
+                    
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <button onclick="document.getElementById('create-fc-modal').classList.add('active')" class="bg-primaryBlue text-white px-5 py-3 rounded-2xl flex items-center gap-2 hover:brightness-110 transition-all text-sm font-bold shadow-lg shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">add</span> Tạo thẻ
+                        </button>
+                        <div class="bg-cardBg border border-gray-700 px-5 py-3 rounded-2xl flex items-center gap-3 shadow-lg shrink-0"><span class="text-textMuted text-xs font-bold uppercase tracking-widest">Đến hạn:</span><span class="text-primaryBlue font-black text-xl" id="fc-counter">0 thẻ</span></div>
+                    </div>
                 </header>
+
+                <div id="fc-next-review" class="hidden mb-6 bg-blue-900/20 border border-blue-900/40 rounded-2xl p-4 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primaryBlue">schedule</span>
+                    <p class="text-primaryBlue text-sm font-medium" id="fc-next-review-text">Thẻ tiếp theo sẽ được ôn sau...</p>
+                </div>
 
                 <div id="fc-empty" class="text-center py-24 hidden bg-cardBg rounded-[32px] border border-gray-700/30 shadow-xl"><span class="material-symbols-outlined text-6xl text-successGreen mb-6">task_alt</span><h3 class="text-2xl font-bold text-white mb-2">Đã xong nhiệm vụ!</h3><p class="text-textMuted">Bạn không có thẻ nào cần ôn tập lúc này.</p></div>
 
@@ -473,7 +506,7 @@
 
                 <div class="bg-cardBg rounded-3xl overflow-hidden border border-gray-700 max-w-4xl mx-auto mb-20 shadow-xl overflow-x-auto">
                     <table class="w-full text-left min-w-[600px]">
-                        <thead class="text-textMuted text-[10px] uppercase tracking-widest font-bold border-b border-gray-700/50 bg-mainBg/30"><tr><th class="py-5 px-6">Hạng</th><th class="py-5 px-6">Bác sĩ</th><th class="py-5 px-6 text-center">Chủ Đề</th><th class="py-5 px-6 text-right">Độ chính xác</th></tr></thead>
+                        <thead class="text-textMuted text-[10px] uppercase tracking-widest font-bold border-b border-gray-700/50 bg-mainBg/30"><tr><th class="py-5 px-6">Hạng</th><th class="py-5 px-6">Bác sĩ</th><th class="py-5 px-6 text-center">Khối Đề</th><th class="py-5 px-6 text-right">Độ chính xác</th></tr></thead>
                         <tbody class="text-sm font-semibold divide-y divide-gray-700/50" id="lb-table"></tbody>
                     </table>
                 </div>
@@ -499,11 +532,11 @@
                         </div>
                     </div>
 
-                    <div class="flex justify-between items-center mb-6"><h3 class="text-white font-black text-2xl">Lịch sử bài thi</h3></div>
+                    <div class="flex justify-between items-center mb-6"><h3 class="text-white font-black text-2xl">Lịch sử ôn luyện</h3></div>
                     <div class="bg-cardBg rounded-[32px] border border-gray-700/30 overflow-hidden shadow-2xl mb-12">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left min-w-[600px]">
-                                <thead class="border-b border-gray-700/50 bg-mainBg/30"><tr class="text-textMuted text-[10px] font-black uppercase tracking-[2px]"><th class="py-5 px-6">Thời gian</th><th class="py-5 px-4">Chủ đề</th><th class="py-5 px-4">Điểm</th><th class="py-5 px-4">Trạng thái</th></tr></thead>
+                                <thead class="border-b border-gray-700/50 bg-mainBg/30"><tr class="text-textMuted text-[10px] font-black uppercase tracking-[2px]"><th class="py-5 px-6">Thời gian</th><th class="py-5 px-4">Chủ đề</th><th class="py-5 px-4">Điểm số</th><th class="py-5 px-4">Trạng thái</th></tr></thead>
                                 <tbody class="divide-y divide-gray-700/30 text-sm font-semibold" id="history-table">
                                     <tr><td colspan="4" class="py-8 text-center text-textMuted">Chưa có lịch sử làm bài.</td></tr>
                                 </tbody>
@@ -596,7 +629,9 @@
 // ========================
 // TỪ ĐIỂN & CONFIG
 // ========================
-const ADMIN_DB_URL = "https://script.google.com/macros/s/AKfycbwnBax9Di4onGtxQXG_XkzCtQ9vrMowCR_9GbLoYlKsoe5cYi_qxWlqZwY_-yZDrc8_Rg/exec";
+const QUIZ_DB_URL = "https://script.google.com/macros/s/AKfycbwnBax9Di4onGtxQXG_XkzCtQ9vrMowCR_9GbLoYlKsoe5cYi_qxWlqZwY_-yZDrc8_Rg/exec";
+const FLASHCARD_DB_URL = "https://script.google.com/macros/s/AKfycbxyHZu57PVJ4mvHkp2NZkydMI-rSD1Kdo6Cjg2ebuM22woPkeFKkuULWRDBvwojHSMb/exec";
+
 const AVATAR_LIST = ['👨‍⚕️', '👩‍⚕️', '🩺', '🧠', '❤️', '💊', '🧬', '🔬', '🚑', '🦴'];
 const BADGE_LIST = {
     'rookie':    { i:'🌱', n:'Tân Binh',      d:'Gia nhập hệ thống' },
@@ -614,9 +649,7 @@ let allQ=[], activeQ=[], wrongQ=[], userAnswers={}, skippedQ=new Set();
 let currentIdx=0, quizMode='practice', timerInterval=null, startTime=0;
 let selSubject="", selTopics=new Set(), selLevels=new Set();
 
-// ========================
-// ĐỒNG HỒ TOPBAR
-// ========================
+// THỜI GIAN THỰC ĐỒNG HỒ TOPBAR
 setInterval(() => {
     const now = new Date();
     document.getElementById('global-clock').textContent = now.getHours().toString().padStart(2,'0') + ":" + now.getMinutes().toString().padStart(2,'0');
@@ -691,27 +724,65 @@ function updateGlobalUI() {
 }
 
 // ========================
-// FETCH & PARSE DB
+// FETCH & PARSE DB (TẢI ĐỒNG THỜI QUIZ VÀ FLASHCARD)
 // ========================
-function fetchAdminDatabase(showMsg=true) {
+async function fetchDatabaseDual(showMsg = true) {
     if(showMsg) document.getElementById('loader').classList.add('active');
-    fetch(ADMIN_DB_URL).then(r=>r.json()).then(data=>{
+    try {
+        const [quizRes, fcRes] = await Promise.all([
+            fetch(QUIZ_DB_URL).catch(e => null),
+            fetch(FLASHCARD_DB_URL).catch(e => null)
+        ]);
+
+        let hasData = false;
+
+        // Xử lý Quiz
+        if (quizRes && quizRes.ok) {
+            const quizData = await quizRes.json();
+            if (quizData && quizData.length) {
+                loadQ(quizData);
+                hasData = true;
+            }
+        }
+
+        // Xử lý Flashcard
+        if (fcRes && fcRes.ok) {
+            const fcData = await fcRes.json();
+            if (fcData && fcData.length) {
+                await loadFlashcards(fcData);
+                hasData = true;
+            }
+        }
+
+        if (showMsg) {
+            if (hasData) showToast('✅ Đồng bộ dữ liệu hệ thống thành công!');
+            else showToast('⚠️ Không có dữ liệu để tải về.');
+        }
+    } catch (error) {
+        console.error("Lỗi đồng bộ:", error);
+        if (showMsg) showToast('❌ Lỗi kết nối, không tải được dữ liệu!');
+    } finally {
         document.getElementById('loader').classList.remove('active');
-        if(data && data.length){ loadQ(data); if(showMsg) showToast('✅ Cập nhật ngân hàng đề thi thành công!'); }
-        else if(showMsg) showToast('⚠️ Không có dữ liệu từ ngân hàng đề.');
-    }).catch(()=>{ document.getElementById('loader').classList.remove('active'); if(showMsg) showToast('❌ Lỗi kết nối, không tải được dữ liệu!'); });
+    }
 }
 
-document.getElementById('file-input').onchange = e => {
+// Xử lý file tải lên riêng lẻ cho Quiz
+document.getElementById('quiz-file-input').onchange = e => {
     const f = e.target.files[0]; if(!f) return;
+    document.getElementById('loader').classList.add('active');
     const r = new FileReader();
-    r.onload = ev => f.name.endsWith('.csv') ? parseCSV(ev.target.result) : parseXLSX(ev.target.result);
+    r.onload = ev => {
+        let rows = f.name.endsWith('.csv') ? parseCSVRaw(ev.target.result) : parseXLSXRaw(ev.target.result);
+        loadQ(rows);
+        document.getElementById('loader').classList.remove('active');
+        showToast('✅ Tải file trắc nghiệm thành công!');
+    };
     f.name.endsWith('.csv') ? r.readAsText(f,'UTF-8') : r.readAsArrayBuffer(f);
 };
 
-// Đọc file CSV, Excel -> Cột 'image' sẽ tự động lưu vào obj.image
-function parseCSV(text) {
+function parseCSVRaw(text) {
     const lines = text.trim().split('\n');
+    if(lines.length < 2) return [];
     const h = lines[0].split(',').map(x=>x.trim().toLowerCase());
     const rows = [];
     for(let i=1; i<lines.length; i++){
@@ -725,33 +796,111 @@ function parseCSV(text) {
         let obj={}; h.forEach((k,j)=>obj[k]=(res[j]||'').replace(/^"|"$/g,'').trim());
         rows.push(obj);
     }
-    loadQ(rows);
-    showToast('✅ Tải file CSV thành công!');
+    return rows;
 }
 
-function parseXLSX(buf) {
+function parseXLSXRaw(buf) {
     const wb = XLSX.read(buf, {type:'array'});
     const rows = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {defval:''});
-    loadQ(rows.map(r=>{
+    return rows.map(r=>{
         let o={};
         Object.keys(r).forEach(k => o[k.toLowerCase().trim()] = String(r[k]).trim());
         return o;
-    }));
-    showToast('✅ Tải file Excel thành công!');
+    });
 }
 
-// ========================
-// BỘ LỌC 3 TẦNG
-// ========================
+// Lọc Data cho Quiz
 function loadQ(rows) {
-    // Chỉ lấy câu có a, b, answer hoặc ít nhất câu hỏi có hình ảnh
     allQ = rows.filter(r=>(r.question||r.image)&&r.a&&r.b&&r.answer);
     allQ.forEach((q,i)=>q._id=q._id||`q_${Date.now()}_${i}`);
+    
+    if(allQ.length === 0) return;
+
     const subjects = [...new Set(allQ.map(q=>q.subject||'Chung').filter(Boolean))];
     selSubject = subjects[0]||""; selTopics.clear(); selLevels.clear();
     renderSubjectFilter(subjects); updateTopicFilter(); updateCount(); switchView('setup');
 }
 
+// Xử lý data Flashcard tải từ Admin
+async function loadFlashcards(rows) {
+    if(!window.userData.blindSpots) window.userData.blindSpots = [];
+    let added = 0;
+
+    rows.forEach(r => {
+        const front = r.question || r.front || r['mặt trước'] || '';
+        const back = r.answer || r.back || r['mặt sau'] || '';
+        const image = r.image || r['ảnh'] || '';
+        const topic = r.topic || r.subject || r['chủ đề'] || 'Chung';
+        const explanation = r.explanation || r['giải thích'] || '';
+
+        if (front || image) {
+            // Check ID hoặc kiểm tra câu hỏi
+            const cid = r._id || `fc_admin_${btoa(front + image)}`;
+            const exists = window.userData.blindSpots.find(c => c._id === cid || (c.question === front && front !== ''));
+            if (!exists) {
+                const newCard = {
+                    _id: cid,
+                    question: front,
+                    answer: back,
+                    explanation: explanation,
+                    image: image,
+                    topic: topic,
+                    srs: { interval: 0, easeFactor: 2.5, dueDate: Date.now() }
+                };
+                window.userData.blindSpots.push(newCard);
+                added++;
+            }
+        }
+    });
+
+    if(added > 0) {
+        await window.syncDataToCloud();
+    }
+}
+
+// ========================
+// LƯU FLASHCARD TỰ TẠO (USER)
+// ========================
+async function saveCustomFc() {
+    const topic = document.getElementById('cfc-topic').value.trim() || 'Thẻ tự tạo';
+    const q = document.getElementById('cfc-q').value.trim();
+    const img = document.getElementById('cfc-img').value.trim();
+    const a = document.getElementById('cfc-a').value.trim();
+    const exp = document.getElementById('cfc-exp').value.trim();
+    
+    if(!q && !img) return showToast('⚠️ Mặt trước phải có chữ hoặc link ảnh!');
+    if(!a) return showToast('⚠️ Bạn chưa nhập đáp án (mặt sau)!');
+    
+    const newCard = {
+        _id: 'fc_user_' + Date.now(),
+        question: q,
+        answer: a,
+        image: img,
+        explanation: exp,
+        topic: topic,
+        srs: { interval: 0, easeFactor: 2.5, dueDate: Date.now() }
+    };
+    
+    if(!window.userData.blindSpots) window.userData.blindSpots = [];
+    window.userData.blindSpots.push(newCard);
+    await window.syncDataToCloud();
+    
+    document.getElementById('create-fc-modal').classList.remove('active');
+    
+    // Clear form
+    document.getElementById('cfc-topic').value = '';
+    document.getElementById('cfc-q').value = '';
+    document.getElementById('cfc-a').value = '';
+    document.getElementById('cfc-img').value = '';
+    document.getElementById('cfc-exp').value = '';
+    
+    showToast('✅ Đã tạo thẻ mới thành công!');
+    renderFlashcards();
+}
+
+// ========================
+// BỘ LỌC 3 TẦNG (QUIZ)
+// ========================
 function renderSubjectFilter(arr) {
     const div = document.getElementById('subj-filters'); div.innerHTML='';
     arr.forEach(val=>{
@@ -761,7 +910,6 @@ function renderSubjectFilter(arr) {
         div.appendChild(c);
     });
 }
-
 function updateTopicFilter() {
     const curTop = [...new Set(allQ.filter(q=>(q.subject||'Chung')===selSubject).map(q=>q.topic||q.tab||'Chung').filter(Boolean))];
     const div = document.getElementById('top-filters'); div.innerHTML='';
@@ -773,7 +921,6 @@ function updateTopicFilter() {
         div.appendChild(c);
     });
 }
-
 function updateLevelFilter() {
     let f=allQ.filter(q=>(q.subject||'Chung')===selSubject);
     if(selTopics.size) f=f.filter(q=>selTopics.has(q.topic||q.tab||'Chung'));
@@ -786,7 +933,6 @@ function updateLevelFilter() {
         div.appendChild(c);
     });
 }
-
 function getFiltered() {
     return allQ.filter(q=>
         ((q.subject||'Chung')===selSubject) &&
@@ -794,7 +940,6 @@ function getFiltered() {
         (!selLevels.size||selLevels.has(q.level||'Chung'))
     );
 }
-
 function updateCount() {
     const f = getFiltered();
     document.getElementById('max-count').textContent=`/ ${f.length}`;
@@ -818,7 +963,6 @@ function startQuiz() {
     
     switchView('quiz');
     
-    // Ẩn/hiện Sidebar tùy theo chế độ
     const quizSidebar = document.getElementById('quiz-sidebar');
     const qTitleMobile = document.getElementById('q-title-mobile');
     
@@ -830,7 +974,6 @@ function startQuiz() {
         document.getElementById('q-timer-box').classList.remove('hidden');
         startTimer(Math.ceil(activeQ.length*0.9));
     } else {
-        // Chế độ Luyện Tập: Ẩn cột trái
         quizSidebar.classList.add('hidden'); quizSidebar.classList.remove('md:flex');
         qTitleMobile.parentElement.classList.remove('hidden');
         document.getElementById('btn-skip').classList.add('hidden');
@@ -862,7 +1005,6 @@ function renderQuestion() {
     document.getElementById('q-pct').textContent = Math.round((currentIdx/activeQ.length)*100)+'%';
     document.getElementById('q-bar').style.width = Math.round((currentIdx/activeQ.length)*100)+'%';
     
-    // Xử lý ảnh trong Câu hỏi
     const imgBox = document.getElementById('q-image-box');
     const imgEl = document.getElementById('q-image');
     if(q.image && q.image.trim() !== '') {
@@ -939,18 +1081,13 @@ function quizSkip() {
 async function submitQuiz() {
     clearInterval(timerInterval);
     let score=0; let rHTML='';
-    wrongQ=[]; // Reset góc mù cho mẻ test mới
+    wrongQ=[]; // Ghi lại lỗi sai tạm cho bài này
     
     activeQ.forEach((q,i)=>{
         const uA=userAnswers[i]||"-", cA=q.answer.toUpperCase(), isOk=uA===cA;
         if(isOk) score++;
         else {
             wrongQ.push(q);
-            // Thêm vào Flashcard nếu chưa có
-            if(!window.userData.blindSpots.find(x=>x._id===q._id)) {
-                const newCard = {...q, srs: { interval: 0, easeFactor: 2.5, nextReviewDate: Date.now() }};
-                window.userData.blindSpots.push(newCard);
-            }
         }
 
         const imgHTML = q.image ? `<img src="${q.image}" alt="Hình ảnh" class="max-w-full max-h-40 rounded-xl border border-gray-700 object-contain mt-3 mb-2" onerror="this.style.display='none'">` : '';
@@ -1007,7 +1144,7 @@ async function submitQuiz() {
 
 function retryWrong() {
     activeQ=[...wrongQ].sort(()=>Math.random()-0.5);
-    currentIdx=0; userAnswers={}; skippedQ.clear(); startTime=Date.now();
+    currentIdx=0; userAnswers={}; skippedQ.clear(); wrongQ=[]; startTime=Date.now();
     switchView('quiz');
     if(quizMode==='exam'){
         document.getElementById('q-timer-box').classList.remove('hidden');
@@ -1017,7 +1154,7 @@ function retryWrong() {
 }
 
 // ========================
-// GÓC MÙ (Chỉ xem câu sai của test gần nhất)
+// GÓC MÙ (Blindspot list)
 // ========================
 function renderBlindspot() {
     const list = document.getElementById('blindspot-list');
@@ -1037,6 +1174,9 @@ function renderBlindspot() {
             <div class="bg-cardBg rounded-3xl p-6 border border-warnOrange/30 mb-6 shadow-lg">
                 <div class="flex justify-between items-center mb-4">
                     <span class="bg-warnOrange/20 text-warnOrange text-[11px] font-extrabold px-4 py-1.5 rounded-full uppercase">Lỗi sai ${i+1}</span>
+                    <button onclick="addQuizToFlashcard('${q._id}')" class="bg-accentBlue text-blue-900 text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 hover:brightness-110 shadow-md">
+                        <span class="material-symbols-outlined text-[14px]">push_pin</span> Lưu thẻ
+                    </button>
                 </div>
                 <p class="font-serif text-lg text-gray-200 mb-2">${q.question}</p>
                 ${imgHTML}
@@ -1050,6 +1190,32 @@ function renderBlindspot() {
     }
 }
 
+// Chức năng Ghim câu sai vào Flashcard
+async function addQuizToFlashcard(qid) {
+    const q = wrongQ.find(x => x._id === qid);
+    if(q) {
+        if(!window.userData.blindSpots) window.userData.blindSpots = [];
+        const exists = window.userData.blindSpots.find(x => x.question === q.question);
+        if(!exists) {
+            const ansText = q[q.answer.toLowerCase()] || q.answer;
+            const newCard = {
+                _id: 'fc_saved_' + Date.now(),
+                question: q.question,
+                answer: ansText,
+                explanation: q.explanation,
+                image: q.image,
+                topic: q.topic || q.subject || 'Đã ghim',
+                srs: { interval: 0, easeFactor: 2.5, dueDate: Date.now() }
+            };
+            window.userData.blindSpots.push(newCard);
+            await window.syncDataToCloud();
+            showToast('📌 Đã lưu câu này vào bộ Flashcard!');
+        } else {
+            showToast('⚠️ Câu này đã có trong Flashcard!');
+        }
+    }
+}
+
 // ========================
 // FLASHCARD (SM-2 ANKI SRS)
 // ========================
@@ -1057,134 +1223,176 @@ let fcIdx=0;
 let fcIsFlipped = false;
 let activeFlashcards = [];
 
-function calcSM2(srs, rating) {
-    let interval = srs.interval || 0;
-    let ease = srs.easeFactor || 2.5;
+function calcNextReview(card, rating) {
+    let srs = card.srs || { interval: 0, easeFactor: 2.5, dueDate: Date.now() };
+    let { interval, easeFactor } = srs;
     const now = Date.now();
-    let label = '';
+    let nextInterval, nextEase, label;
 
-    if (rating === 'again') {
-        interval = 0; // 0 ngày -> < 1 phút
-        ease = Math.max(1.3, ease - 0.2);
-        label = '< 1 Phút';
-    } else if (rating === 'hard') {
-        interval = Math.max(0.1, interval * 1.2); // Khoảng 10 phút nếu interval nhỏ
-        ease = Math.max(1.3, ease - 0.15);
-        label = interval < 1 ? '10 Phút' : Math.round(interval) + ' Ngày';
-    } else if (rating === 'good') {
-        interval = (interval === 0 || interval < 1) ? 1 : interval * ease;
-        label = interval < 1 ? '1 Ngày' : Math.round(interval) + ' Ngày';
-    } else if (rating === 'easy') {
-        interval = (interval === 0 || interval < 1) ? 4 : interval * ease * 1.3;
-        ease = Math.min(4.0, ease + 0.15);
-        label = Math.round(interval) + ' Ngày';
+    if(rating === 'again') {
+        nextInterval = 0; 
+        nextEase = Math.max(1.3, easeFactor - 0.2);
+        label = 'Dưới 1 phút';
+    } else if(rating === 'hard') {
+        nextInterval = Math.max(1, interval * 1.2);
+        nextEase = Math.max(1.3, easeFactor - 0.15);
+        label = nextInterval < 1 ? 'Hôm nay' : Math.round(nextInterval) + ' ngày';
+    } else if(rating === 'good') {
+        nextInterval = interval === 0 ? 1 : interval < 1 ? 4 : interval * easeFactor;
+        nextEase = easeFactor;
+        label = nextInterval < 1 ? 'Hôm nay' : Math.round(nextInterval) + ' ngày';
+    } else { 
+        nextInterval = interval === 0 ? 4 : interval * easeFactor * 1.3;
+        nextEase = Math.min(4.0, easeFactor + 0.15);
+        label = Math.round(nextInterval) + ' ngày';
     }
 
-    const nextReviewDate = rating === 'again' 
-        ? now + 60 * 1000 
-        : (rating === 'hard' && interval < 1) 
-            ? now + 10 * 60 * 1000 
-            : now + Math.round(interval) * 24 * 60 * 60 * 1000;
+    const dueDate = rating === 'again'
+        ? now + 60 * 1000 // 1 phút
+        : now + Math.max(1, Math.round(nextInterval)) * 24 * 60 * 60 * 1000;
 
-    return { interval, easeFactor: ease, nextReviewDate, label };
+    return { interval: nextInterval, easeFactor: nextEase, dueDate, label };
+}
+
+function getSRSTimeLabels(card) {
+    const srs = card.srs || { interval: 0, easeFactor: 2.5 };
+    const get = r => calcNextReview(card, r).label;
+    return { again: '<1 phút', hard: get('hard'), good: get('good'), easy: get('easy') };
 }
 
 function renderFlashcards() {
     const now = Date.now();
-    activeFlashcards = (window.userData.blindSpots||[]).filter(c => !c.srs || !c.srs.nextReviewDate || c.srs.nextReviewDate <= now);
+    activeFlashcards = (window.userData.blindSpots||[]).filter(c => !c.srs || c.srs.dueDate <= now);
+    const total = (window.userData.blindSpots||[]).length;
     
-    document.getElementById('fc-counter').textContent = `${activeFlashcards.length} thẻ`;
+    document.getElementById('fc-counter').textContent=`${activeFlashcards.length} / ${total} thẻ`;
 
     if(!activeFlashcards.length){
         document.getElementById('fc-empty').classList.remove('hidden');
         document.getElementById('fc-container').classList.add('hidden');
+        
+        const allCards = window.userData.blindSpots||[];
+        if(allCards.length > 0) {
+            const nextDue = Math.min(...allCards.map(c=>c.srs?.dueDate||0));
+            const diffMs = nextDue - now;
+            let timeStr = '';
+            if(diffMs <= 0) timeStr = 'ngay bây giờ';
+            else if(diffMs < 3600000) timeStr = Math.ceil(diffMs/60000) + ' phút nữa';
+            else if(diffMs < 86400000) timeStr = Math.ceil(diffMs/3600000) + ' giờ nữa';
+            else timeStr = Math.ceil(diffMs/86400000) + ' ngày nữa';
+            
+            document.getElementById('fc-next-review').classList.remove('hidden');
+            document.getElementById('fc-next-review-text').textContent = `Lần ôn tiếp theo: ${timeStr}`;
+        } else {
+             document.getElementById('fc-next-review').classList.add('hidden');
+        }
+
     } else {
         document.getElementById('fc-empty').classList.add('hidden');
+        document.getElementById('fc-next-review').classList.add('hidden');
         document.getElementById('fc-container').classList.remove('hidden');
-        fcIdx = 0; showFlashcard();
+        fcIdx=0; showCard();
     }
 }
 
-function showFlashcard() {
-    if(fcIdx >= activeFlashcards.length) return renderFlashcards();
-    const q = activeFlashcards[fcIdx];
-    fcIsFlipped = false;
-    
-    document.getElementById('fc-card-inner').classList.remove('is-flipped');
-    document.getElementById('fc-topic').textContent = q.topic || q.subject || 'Chung';
-    document.getElementById('fc-q').textContent = q.question ? `"${q.question}"` : "";
+function getDueCards() {
+    const now = Date.now();
+    return (window.userData.blindSpots||[]).filter(c => !c.srs || c.srs.dueDate <= now);
+}
 
-    // Xử lý ảnh linh hoạt
-    const imgFront = document.getElementById('fc-image-front');
-    const imgBack = document.getElementById('fc-image-back');
-    if(q.image && q.image.trim() !== '') {
-        imgFront.innerHTML = `<img src="${q.image.trim()}" class="max-h-48 rounded-lg object-contain border border-gray-700/50 shadow-lg">`;
-        imgFront.classList.remove('hidden');
-        imgBack.innerHTML = `<img src="${q.image.trim()}" class="max-h-32 rounded-lg object-contain border border-gray-700/50 shadow-lg mt-2">`;
-        imgBack.classList.remove('hidden');
+function showCard() {
+    const arr = getDueCards();
+    if(!arr.length) return renderFlashcards();
+    if(fcIdx>=arr.length) fcIdx=0;
+    const q=arr[fcIdx];
+    fcIsFlipped = false;
+    document.getElementById('fc-card-inner').classList.remove('is-flipped');
+    document.getElementById('fc-topic').textContent=q.topic||q.subject||'Chung';
+    document.getElementById('fc-q').textContent= q.question ? `"${q.question}"` : "";
+
+    const fcImgBox = document.getElementById('fc-image-box');
+    const fcImg = document.getElementById('fc-image');
+    if(q.image && q.image.trim()) {
+        fcImg.src = q.image.trim();
+        fcImgBox.classList.remove('hidden');
+        fcImg.onerror = () => fcImgBox.classList.add('hidden');
     } else {
-        imgFront.classList.add('hidden'); imgFront.innerHTML = '';
-        imgBack.classList.add('hidden'); imgBack.innerHTML = '';
+        fcImgBox.classList.add('hidden');
+        fcImg.src='';
     }
 
-    const ans = q.answer.toUpperCase();
-    document.getElementById('fc-a').textContent = `${ans}. ${q[ans.toLowerCase()]}`;
-    document.getElementById('fc-exp').textContent = q.explanation || 'Không có giải thích chi tiết.';
+    const srsInfo = document.getElementById('fc-srs-info');
+    if(q.srs && q.srs.interval >= 1) {
+        srsInfo.textContent = `Chu kỳ: ${Math.round(q.srs.interval)} ngày`;
+    } else {
+        srsInfo.textContent = 'Thẻ mới';
+    }
 
-    // Hiển thị nhãn thời gian dự kiến trên 4 nút
-    const srs = q.srs || { interval: 0, easeFactor: 2.5 };
-    document.getElementById('srs-time-again').textContent = calcSM2(srs, 'again').label;
-    document.getElementById('srs-time-hard').textContent = calcSM2(srs, 'hard').label;
-    document.getElementById('srs-time-good').textContent = calcSM2(srs, 'good').label;
-    document.getElementById('srs-time-easy').textContent = calcSM2(srs, 'easy').label;
+    const labels = getSRSTimeLabels(q);
+    document.getElementById('srs-time-again').textContent = labels.again;
+    document.getElementById('srs-time-hard').textContent = labels.hard;
+    document.getElementById('srs-time-good').textContent = labels.good;
+    document.getElementById('srs-time-easy').textContent = labels.easy;
 
-    document.getElementById('fc-actions').classList.add('opacity-50', 'pointer-events-none');
+    // Mặt sau
+    document.getElementById('fc-a').textContent = q.answer || '';
+    document.getElementById('fc-exp').textContent=q.explanation||'Không có giải thích chi tiết.';
+
+    lockSRSButtons();
 }
 
 function flipFlashcard() {
     fcIsFlipped = !fcIsFlipped;
     document.getElementById('fc-card-inner').classList.toggle('is-flipped', fcIsFlipped);
-    if(fcIsFlipped) {
-        setTimeout(()=>{
-            document.getElementById('fc-actions').classList.remove('opacity-50', 'pointer-events-none');
-        }, 300);
-    } else {
-        document.getElementById('fc-actions').classList.add('opacity-50', 'pointer-events-none');
-    }
+    if(fcIsFlipped) unlockSRSButtons(); else lockSRSButtons();
+}
+
+function lockSRSButtons() {
+    const box = document.getElementById('fc-actions');
+    box.style.opacity='0.4'; box.style.pointerEvents='none';
+}
+
+function unlockSRSButtons() {
+    setTimeout(()=>{
+        const box = document.getElementById('fc-actions');
+        box.style.opacity='1'; box.style.pointerEvents='auto';
+    }, 300);
 }
 
 async function sm2Answer(rating) {
-    if(!activeFlashcards.length) return;
-    const q = activeFlashcards[fcIdx];
+    const arr = getDueCards();
+    if(!arr.length) return;
+    const q = arr[fcIdx];
     
-    // Cập nhật SRS logic
-    const srs = q.srs || { interval: 0, easeFactor: 2.5 };
-    const newSRS = calcSM2(srs, rating);
+    const result = calcNextReview(q, rating);
     
-    const dbIdx = window.userData.blindSpots.findIndex(c => c._id === q._id);
-    if(dbIdx !== -1) {
-        window.userData.blindSpots[dbIdx].srs = {
-            interval: newSRS.interval,
-            easeFactor: newSRS.easeFactor,
-            nextReviewDate: newSRS.nextReviewDate
+    const idx = window.userData.blindSpots.findIndex(c=>c._id===q._id);
+    if(idx !== -1) {
+        window.userData.blindSpots[idx].srs = {
+            interval: result.interval,
+            easeFactor: result.easeFactor,
+            dueDate: result.dueDate
         };
     }
+
+    const msgs = {
+        'again': '🔄 Sẽ ôn lại trong vài phút!',
+        'hard':  '⚠️ Đã ghi nhận — sẽ ôn lại sớm!',
+        'good':  '👍 Tốt! Hẹn gặp lại ' + result.label + '!',
+        'easy':  '⭐ Xuất sắc! Lưu vào ghi nhớ dài hạn!'
+    };
+    showToast(msgs[rating]);
+
     await window.syncDataToCloud();
 
-    if (rating === 'again') {
-        showToast('🔄 Sẽ ôn lại trong ít phút!');
-        // Đưa thẻ xuống cuối danh sách hiện tại
-        activeFlashcards.push(activeFlashcards.splice(fcIdx, 1)[0]);
-        showFlashcard(); 
+    if(rating === 'again') {
+        fcIdx = (fcIdx + 1) % Math.max(1, getDueCards().length);
     } else {
-        showToast(`✅ Đã nhớ! Ôn lại sau ${newSRS.label}`);
-        activeFlashcards.splice(fcIdx, 1);
-        if(activeFlashcards.length > 0) {
-            showFlashcard();
-        } else {
-            renderFlashcards(); // Sẽ hiển thị màn hình trống
-        }
+        const newArr = getDueCards();
+        if(fcIdx >= newArr.length) fcIdx = 0;
     }
+    
+    renderFlashcards();
 }
 
 // ========================
@@ -1193,7 +1401,7 @@ async function sm2Answer(rating) {
 async function loadLeaderboardUI() {
     const data = await window.getLeaderboardData();
     const tb=document.getElementById('lb-table'); tb.innerHTML='';
-    if(!data.length) return tb.innerHTML='<tr><td colspan="4" class="py-8 text-center text-textMuted">Chưa có dữ liệu thi thử.</td></tr>';
+    if(!data.length) return tb.innerHTML='<tr><td colspan="4" class="py-8 text-center text-textMuted">Chưa có dữ liệu thi thử nào.</td></tr>';
     [1,2,3].forEach(rank=>{
         const d=data[rank-1]; if(!d) return;
         document.getElementById(`lb-p${rank}-name`).textContent=d.name;
@@ -1239,7 +1447,7 @@ function setupProfileView() {
 
 async function saveProfile() {
     const name = document.getElementById('prof-name').value.trim();
-    window.userData.name = name || 'Khách';
+    window.userData.name = name || 'Bác sĩ';
     await window.syncDataToCloud();
     updateGlobalUI();
     showToast('✅ Lưu hồ sơ thành công!');
