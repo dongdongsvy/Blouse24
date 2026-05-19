@@ -283,6 +283,8 @@
             </button>
             <button onclick="switchView('blindspot')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
                 <span class="material-symbols-outlined">visibility_off</span> Góc Mù
+             <button onclick="switchView('quizhub')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
+                <span class="material-symbols-outlined">quiz</span> Quiz
             </button>
             <button onclick="switchView('flashcard')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
                 <span class="material-symbols-outlined">style</span> Flashcard
@@ -336,8 +338,16 @@
                         <p class="text-textMuted font-medium leading-relaxed">Học là 9, nhậu là 10. Chúc các bác sĩ tương lai cày êm, thi mượt, qua môn trót lọt với hệ thống ôn luyện độc quyền.</p>
                     </div>
                     <div class="w-40 h-40 rounded-[24px] overflow-hidden shadow-2xl border-4 border-gray-800 shrink-0 hidden lg:flex items-center justify-center bg-mainBg">
-                        <img src="https://images.unsplash.com/photo-1576091160550-2173ff9e5ee5?q=80&w=400&auto=format&fit=crop" class="w-full h-full object-cover">
+                        <img src="file_00000000209c7209bc92d6c0a8f5f1c2" class="w-full h-full object-cover">
                     </div>
+                    <div id="view-quizhub" class="view-section p-6 md:p-10 max-w-6xl mx-auto w-full">
+    <header class="mb-8">
+        <h2 class="text-3xl font-black text-white mb-2">Kho đề trắc nghiệm</h2>
+        <p class="text-textMuted">Chọn môn và bắt đầu làm đề.</p>
+    </header>
+
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="quizhub-grid"></div>
+</div>
                 </section>
 
                 <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -446,7 +456,7 @@
                         <div class="flex-1 overflow-y-auto pr-2 relative z-10">
                             <h2 id="q-text" class="font-serif text-xl md:text-2xl text-gray-200 leading-relaxed italic mb-4">...</h2>
                             <div id="q-image-box" class="mb-6 hidden flex justify-center">
-                                <img id="q-image" src="" alt="Hình ảnh câu hỏi" class="max-w-full max-h-64 rounded-2xl border border-gray-700 object-contain shadow-lg">
+                                <img id="q-image" onclick="openImgViewer(this.src)" src="" alt="Hình ảnh câu hỏi" class="max-w-full max-h-64 rounded-2xl border border-gray-700 object-contain shadow-lg">
                             </div>
                             <div id="choices-box" class="flex flex-col gap-3"></div>
                             <div id="practice-feedback" class="mt-6 p-5 rounded-2xl hidden"></div>
@@ -1509,6 +1519,61 @@ window.saveProfile = async () => {
     updateGlobalUI();
     showToast('✅ Lưu thông tin cá nhân thành công!');
 };
+let imgScale = 1;
+let imgX = 0;
+let imgY = 0;
+let dragging = false;
+let startX = 0;
+let startY = 0;
+
+window.openImgViewer = function(src){
+    const box = document.getElementById('img-lightbox');
+    const img = document.getElementById('lightbox-img');
+    img.src = src;
+    imgScale = 1; imgX = 0; imgY = 0;
+    img.style.transform = `scale(1) translate(0px,0px)`;
+    box.classList.add('active');
+};
+
+window.closeImgViewer = function(){
+    document.getElementById('img-lightbox').classList.remove('active');
+};
+
+const lbImg = document.getElementById('lightbox-img');
+
+lbImg?.addEventListener('wheel', e=>{
+    e.preventDefault();
+    imgScale += e.deltaY < 0 ? 0.15 : -0.15;
+    imgScale = Math.max(1, Math.min(4, imgScale));
+    lbImg.style.transform = `translate(${imgX}px,${imgY}px) scale(${imgScale})`;
+});
+
+lbImg?.addEventListener('mousedown', e=>{
+    dragging = true;
+    startX = e.clientX - imgX;
+    startY = e.clientY - imgY;
+});
+
+window.addEventListener('mousemove', e=>{
+    if(!dragging) return;
+    imgX = e.clientX - startX;
+    imgY = e.clientY - startY;
+    lbImg.style.transform = `translate(${imgX}px,${imgY}px) scale(${imgScale})`;
+});
+
+window.addEventListener('mouseup', ()=> dragging = false);
 </script>
+<div id="img-lightbox" class="overlay">
+    <div class="relative max-w-[95vw] max-h-[95vh]">
+        <button onclick="closeImgViewer()" class="absolute top-4 right-4 z-50 bg-black/60 text-white rounded-full p-2">
+            <span class="material-symbols-outlined">close</span>
+        </button>
+
+        <img id="lightbox-img"
+             src=""
+             class="max-w-[90vw] max-h-[90vh] rounded-2xl shadow-2xl cursor-grab select-none"
+             style="transform:scale(1) translate(0px,0px); transition:transform .15s;">
+    </div>
+</div>
 </body>
 </html>
