@@ -140,7 +140,7 @@
                 <textarea id="cfc-q" class="w-full bg-mainBg border border-gray-700 rounded-xl p-3 text-white focus:border-primaryBlue outline-none text-sm" rows="2"></textarea>
             </div>
             <div>
-                <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-1 block flex justify-between">Tải Ảnh Lên (Tùy chọn) <span id="cfc-img-status" class="text-primaryBlue font-medium"></span></label>
+                <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-1 flex justify-between">Tải Ảnh Lên (Tùy chọn) <span id="cfc-img-status" class="text-primaryBlue font-medium"></span></label>
                 <input type="file" id="cfc-img-file" accept="image/*" class="w-full bg-mainBg border border-gray-700 rounded-xl p-2 text-white focus:border-primaryBlue outline-none text-sm cursor-pointer file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-primaryBlue file:text-white">
             </div>
             <div>
@@ -207,9 +207,9 @@
     const snap = await getDocs(q); return snap.docs.map(d => d.data());
   };
 
-  // 🔥 DÁN MÃ API IMGBB CỦA SẾP VÀO ĐÂY 🔥
-  const IMGBB_API_KEY = "2c386b7e73f15665f2779d9f81eb9370";
-
+  // 🔥🔥🔥 SẾP DÁN MÃ IMGBB VÀO DÒNG BÊN DƯỚI NHÉ 🔥🔥🔥
+  const IMGBB_API_KEY = "2c386b7e73f15665f2779d9f81eb9370"; 
+  
   window.uploadToImgBB = async (file) => {
       const formData = new FormData();
       formData.append("image", file);
@@ -226,7 +226,6 @@
       }
   };
 
-  // Kéo và đẩy thẻ Cộng đồng
   window.publishCommunityCard = async (cardObj) => {
       try {
           await setDoc(doc(window.db, "community_flashcards", cardObj._id), cardObj);
@@ -516,14 +515,14 @@
                                 <div class="fc-face fc-front">
                                     <div class="absolute top-6 left-8 text-[10px] font-black text-primaryBlue uppercase tracking-[2px] bg-primaryBlue/10 px-3 py-1 rounded-lg border border-primaryBlue/20">MẶT TRƯỚC</div>
                                     <div id="fc-image-front" class="hidden flex justify-center mb-4 mt-8"></div>
-                                    <h3 class="font-serif text-xl md:text-2xl text-gray-200 leading-relaxed text-center italic px-4 mt-4" id="fc-q">Câu hỏi...</h3>
+                                    <h3 class="font-serif text-xl md:text-2xl text-gray-200 leading-relaxed text-center italic px-4 mt-4" id="fc-q">...</h3>
                                     <div class="mt-auto pt-6 w-full text-center text-textMuted text-xs font-bold uppercase tracking-widest animate-pulse flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">touch_app</span> Chạm để lật thẻ</div>
                                 </div>
                                 <div class="fc-face fc-back">
                                     <div class="absolute top-6 left-8 text-[10px] font-black text-successGreen uppercase tracking-[2px] bg-successGreen/10 px-3 py-1 rounded-lg border border-successGreen/20">MẶT SAU</div>
-                                    <div class="bg-mainBg/50 p-5 rounded-2xl border border-primaryBlue/30 mb-4 mt-8"><h4 class="text-white font-bold text-lg" id="fc-a">Đáp án...</h4></div>
+                                    <div class="bg-mainBg/50 p-5 rounded-2xl border border-primaryBlue/30 mb-4 mt-8"><h4 class="text-white font-bold text-lg" id="fc-a">...</h4></div>
                                     <div id="fc-image-back" class="hidden flex justify-center mb-4"></div>
-                                    <div class="flex items-start gap-3 mt-auto pt-4"><span class="material-symbols-outlined text-primaryBlue mt-1">lightbulb</span><p class="text-gray-300 text-sm leading-relaxed font-medium text-left" id="fc-exp">Giải thích...</p></div>
+                                    <div class="flex items-start gap-3 mt-auto pt-4"><span class="material-symbols-outlined text-primaryBlue mt-1">lightbulb</span><p class="text-gray-300 text-sm leading-relaxed font-medium text-left" id="fc-exp">...</p></div>
                                 </div>
                             </div>
                         </div>
@@ -650,7 +649,7 @@
 
 <script>
 // ========================
-// TỪ ĐIỂN & CONFIG
+// CORE SCRIPT - DỌN SẠCH CÁC HÀM TRÙNG LẶP
 // ========================
 const QUIZ_DB_URL = "https://script.google.com/macros/s/AKfycbwnBax9Di4onGtxQXG_XkzCtQ9vrMowCR_9GbLoYlKsoe5cYi_qxWlqZwY_-yZDrc8_Rg/exec";
 const FLASHCARD_DB_URL = "https://script.google.com/macros/s/AKfycbxyHZu57PVJ4mvHkp2NZkydMI-rSD1Kdo6Cjg2ebuM22woPkeFKkuULWRDBvwojHSMb/exec";
@@ -679,7 +678,7 @@ setInterval(() => {
 }, 1000);
 
 let sidebarOpen = false;
-function toggleSidebar() {
+window.toggleSidebar = () => {
     const sidebar = document.getElementById('main-sidebar');
     const overlay = document.getElementById('sidebar-overlay');
     if (window.innerWidth <= 768) {
@@ -689,24 +688,25 @@ function toggleSidebar() {
     } else {
         sidebar.classList.toggle('sidebar-collapsed');
     }
-}
-function closeSidebarMobile() {
+};
+
+window.closeSidebarMobile = () => {
     if (window.innerWidth <= 768) {
         document.getElementById('main-sidebar').classList.remove('open');
         document.getElementById('sidebar-overlay').classList.remove('active');
         sidebarOpen = false;
     }
-}
+};
 
-function showToast(msg) {
+window.showToast = (msg) => {
     const box = document.getElementById('toast-box');
     const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = msg; box.appendChild(t);
     setTimeout(()=>t.classList.add('show'), 10);
     setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(), 300); }, 3500);
-}
+};
 
-function switchView(id) {
-    closeSidebarMobile();
+window.switchView = (id) => {
+    window.closeSidebarMobile();
     document.querySelectorAll('.view-section').forEach(v => v.classList.remove('active'));
     const targetView = document.getElementById('view-' + id);
     if(targetView) targetView.classList.add('active');
@@ -718,19 +718,16 @@ function switchView(id) {
     const topbar = document.getElementById('global-topbar');
     if(id === 'quiz' || id === 'setup') topbar.classList.add('hidden'); else topbar.classList.remove('hidden');
 
-    const titleMap = {
-        'dashboard':'Trang chủ', 'leaderboard':'Bảng Vàng', 'settings':'Cài đặt',
-        'profile':'Hồ sơ cá nhân', 'blindspot':'Góc mù', 'flashcard':'Flashcard', 'result':'Kết quả'
-    };
+    const titleMap = { 'dashboard':'Trang chủ', 'leaderboard':'Bảng Vàng', 'settings':'Cài đặt', 'profile':'Hồ sơ cá nhân', 'blindspot':'Góc mù', 'flashcard':'Flashcard', 'result':'Kết quả' };
     if (document.getElementById('topbar-title')) document.getElementById('topbar-title').textContent = titleMap[id] || id;
 
     if(id === 'leaderboard') loadLeaderboardUI();
     if(id === 'flashcard') renderFlashcardDecks();
     if(id === 'blindspot') renderBlindspot();
     if(id === 'profile') setupProfileView();
-}
+};
 
-function updateGlobalUI() {
+window.updateGlobalUI = () => {
     const d = window.userData; if(!d) return;
     document.getElementById('side-ava').textContent = d.avatar;
     document.getElementById('side-name').textContent = d.name;
@@ -738,12 +735,12 @@ function updateGlobalUI() {
     document.getElementById('dash-streak').textContent = d.streak + ' Ngày';
     document.getElementById('dash-done').textContent = d.totalDone + ' Câu';
     document.getElementById('dash-rate').textContent = d.totalDone ? Math.round(d.totalCorrect/d.totalDone*100) + '%' : '0%';
-}
+};
 
 // ========================
 // FETCH DATA KÉP & CỘNG ĐỒNG
 // ========================
-async function fetchDatabaseDual(showMsg = true) {
+window.fetchDatabaseDual = async (showMsg = true) => {
     if(showMsg) document.getElementById('loader').classList.add('active');
     try {
         const [quizRes, fcRes, commCards] = await Promise.all([
@@ -753,14 +750,11 @@ async function fetchDatabaseDual(showMsg = true) {
         ]);
 
         let hasData = false;
-
-        // Xử lý Quiz
         if (quizRes && quizRes.ok) {
             const quizData = await quizRes.json();
             if (quizData && quizData.length) { loadQ(quizData); hasData = true; }
         }
 
-        // Xử lý Flashcard (Gộp file Admin và file Cộng đồng)
         let allFcData = commCards || [];
         if (fcRes && fcRes.ok) {
             const fcData = await fcRes.json();
@@ -772,15 +766,15 @@ async function fetchDatabaseDual(showMsg = true) {
         }
 
         if (showMsg) {
-            if (hasData) showToast('✅ Đồng bộ dữ liệu hệ thống thành công!');
-            else showToast('⚠️ Không có dữ liệu để tải về.');
+            if (hasData) window.showToast('✅ Đồng bộ dữ liệu hệ thống thành công!');
+            else window.showToast('⚠️ Không có dữ liệu để tải về.');
         }
     } catch (error) {
-        if (showMsg) showToast('❌ Lỗi kết nối, không tải được dữ liệu!');
+        if (showMsg) window.showToast('❌ Lỗi kết nối, không tải được dữ liệu!');
     } finally {
         document.getElementById('loader').classList.remove('active');
     }
-}
+};
 
 document.getElementById('quiz-file-input').onchange = e => {
     const f = e.target.files[0]; if(!f) return;
@@ -790,7 +784,7 @@ document.getElementById('quiz-file-input').onchange = e => {
         let rows = f.name.endsWith('.csv') ? parseCSVRaw(ev.target.result) : parseXLSXRaw(ev.target.result);
         loadQ(rows);
         document.getElementById('loader').classList.remove('active');
-        showToast('✅ Tải file trắc nghiệm thành công!');
+        window.showToast('✅ Tải file trắc nghiệm thành công!');
     };
     f.name.endsWith('.csv') ? r.readAsText(f,'UTF-8') : r.readAsArrayBuffer(f);
 };
@@ -802,9 +796,7 @@ function parseCSVRaw(text) {
     const rows = [];
     for(let i=1; i<lines.length; i++){
         let res=[], cur='', inQ=false;
-        for(let c of lines[i]){
-            if(c==='"') inQ=!inQ; else if(c===','&&!inQ){ res.push(cur); cur=''; } else cur+=c;
-        }
+        for(let c of lines[i]){ if(c==='"') inQ=!inQ; else if(c===','&&!inQ){ res.push(cur); cur=''; } else cur+=c; }
         res.push(cur);
         let obj={}; h.forEach((k,j)=>obj[k]=(res[j]||'').replace(/^"|"$/g,'').trim());
         rows.push(obj);
@@ -826,7 +818,7 @@ function loadQ(rows) {
     if(allQ.length === 0) return;
     const subjects = [...new Set(allQ.map(q=>q.subject||'Chung').filter(Boolean))];
     selSubject = subjects[0]||""; selTopics.clear();
-    renderSubjectFilter(subjects); updateTopicFilter(); updateCount(); switchView('setup');
+    renderSubjectFilter(subjects); updateTopicFilter(); updateCount(); window.switchView('setup');
 }
 
 async function loadFlashcards(rows) {
@@ -856,16 +848,13 @@ async function loadFlashcards(rows) {
 }
 
 // ========================
-// LOGIC TẠO THƯ MỤC VÀ TẠO THẺ CÁ NHÂN (QUIZLET STYLE)
+// QUẢN LÝ THƯ MỤC VÀ TẠO THẺ (QUIZLET STYLE)
 // ========================
-
-// Mở form tạo Thư mục mới
 window.confirmCreateDeck = () => {
     const name = document.getElementById('new-deck-name').value.trim();
-    if(!name) return showToast('⚠️ Vui lòng nhập tên thư mục!');
+    if(!name) return window.showToast('⚠️ Vui lòng nhập tên thư mục!');
     document.getElementById('create-deck-modal').classList.remove('active');
     
-    // Khởi tạo trạng thái rỗng cho thư mục vừa tạo và nhảy vào đó luôn
     currentDeck = name;
     activeFlashcards = [];
     
@@ -876,7 +865,6 @@ window.confirmCreateDeck = () => {
     document.getElementById('fc-deck-title').textContent = currentDeck;
     document.getElementById('fc-counter').textContent = `0 / 0 thẻ`;
 
-    // Hiển thị trạng thái hoàn toàn trống
     document.getElementById('fc-empty').classList.remove('hidden');
     document.getElementById('fc-empty-icon').textContent = 'note_add';
     document.getElementById('fc-empty-title').textContent = 'Thư mục trống';
@@ -884,47 +872,39 @@ window.confirmCreateDeck = () => {
     document.getElementById('fc-container').classList.add('hidden');
 };
 
-// Mở form tạo Thẻ mới trong Thư mục hiện tại
 window.openAddCardModal = () => {
     document.getElementById('cfc-current-deck-name').textContent = currentDeck;
     document.getElementById('create-fc-modal').classList.add('active');
 };
 
-// Lưu thẻ mới
-async function saveCustomFc() {
-    // Lấy tên thư mục đang đứng thay vì bắt user gõ
+window.saveCustomFc = async () => {
     const topic = currentDeck || 'Thẻ tự tạo';
     const q = document.getElementById('cfc-q').value.trim();
     const a = document.getElementById('cfc-a').value.trim();
     let exp = document.getElementById('cfc-exp').value.trim();
     const fileInput = document.getElementById('cfc-img-file');
     
-    if(!q && fileInput.files.length === 0) return showToast('⚠️ Mặt trước phải có chữ hoặc ảnh!');
-    if(!a) return showToast('⚠️ Bạn chưa nhập đáp án (mặt sau)!');
+    if(!q && fileInput.files.length === 0) return window.showToast('⚠️ Mặt trước phải có chữ hoặc ảnh!');
+    if(!a) return window.showToast('⚠️ Bạn chưa nhập đáp án (mặt sau)!');
     
     let imgUrl = "";
-
     if (fileInput.files.length > 0) {
         document.getElementById('cfc-img-status').textContent = "(Đang tải ảnh lên...)";
         imgUrl = await window.uploadToImgBB(fileInput.files[0]);
         if(!imgUrl) {
             document.getElementById('cfc-img-status').textContent = "";
-            return showToast('❌ Lỗi tải ảnh lên Imgur! Hãy thử lại.');
+            return window.showToast('❌ Lỗi tải ảnh lên Imgur! Hãy thử lại.');
         }
     }
     
     const authorName = window.userData.name || 'Bác sĩ ẩn danh';
-    if(exp) exp += ` \n(Tạo bởi: ${authorName})`;
-    else exp = `(Tạo bởi: ${authorName})`;
+    if(exp) exp += ` \n(Tạo bởi: ${authorName})`; else exp = `(Tạo bởi: ${authorName})`;
 
     const newCard = {
         _id: 'fc_user_' + Date.now() + '_' + window.currentUser.uid,
-        question: q, answer: a, image: imgUrl, explanation: exp, topic: topic,
-        author: authorName,
-        createdAt: Date.now()
+        question: q, answer: a, image: imgUrl, explanation: exp, topic: topic, author: authorName, createdAt: Date.now()
     };
     
-    // Đẩy lên Cộng Đồng Firebase (Nếu mạng lỗi nó sẽ báo ở Console, nhưng vẫn lưu Local)
     await window.publishCommunityCard(newCard);
 
     const myCard = {...newCard, srs: { interval: 0, easeFactor: 2.5, dueDate: Date.now() }};
@@ -933,18 +913,13 @@ async function saveCustomFc() {
     await window.syncDataToCloud();
     
     document.getElementById('create-fc-modal').classList.remove('active');
-    document.getElementById('cfc-q').value = '';
-    document.getElementById('cfc-a').value = '';
-    document.getElementById('cfc-img-file').value = '';
-    document.getElementById('cfc-exp').value = '';
-    document.getElementById('cfc-img-status').textContent = "";
-    document.getElementById('new-deck-name').value = '';
+    document.getElementById('cfc-q').value = ''; document.getElementById('cfc-a').value = '';
+    document.getElementById('cfc-img-file').value = ''; document.getElementById('cfc-exp').value = '';
+    document.getElementById('cfc-img-status').textContent = ""; document.getElementById('new-deck-name').value = '';
     
-    showToast('✅ Đã chia sẻ thẻ lên Cộng Đồng!');
-    
-    // Load lại bộ thẻ đang xem
-    startStudyDeck(currentDeck);
-}
+    window.showToast('✅ Đã chia sẻ thẻ lên Cộng Đồng!');
+    window.startStudyDeck(currentDeck);
+};
 
 // ========================
 // SETUP QUIZ (BỎ ĐỘ KHÓ)
@@ -969,10 +944,7 @@ function updateTopicFilter() {
     });
 }
 function getFiltered() {
-    return allQ.filter(q=>
-        ((q.subject||'Chung')===selSubject) &&
-        (!selTopics.size||selTopics.has(q.topic||q.tab||'Chung'))
-    );
+    return allQ.filter(q=> ((q.subject||'Chung')===selSubject) && (!selTopics.size||selTopics.has(q.topic||q.tab||'Chung')) );
 }
 function updateCount() {
     const f = getFiltered();
@@ -982,21 +954,20 @@ function updateCount() {
 // ========================
 // QUIZ LOGIC
 // ========================
-function setQuizMode(m) {
+window.setQuizMode = (m) => {
     quizMode=m;
     document.getElementById('btn-mode-practice').className=`px-6 py-2 rounded-lg text-sm font-bold transition-all ${m==='practice'?'bg-primaryBlue text-white shadow-md':'text-textMuted hover:text-white'}`;
     document.getElementById('btn-mode-exam').className=`px-6 py-2 rounded-lg text-sm font-bold transition-all ${m==='exam'?'bg-primaryBlue text-white shadow-md':'text-textMuted hover:text-white'}`;
-}
+};
 
-function startQuiz() {
+window.startQuiz = () => {
     const f=getFiltered();
-    if(!f.length) return showToast('❌ Không có câu hỏi nào phù hợp với bộ lọc!');
+    if(!f.length) return window.showToast('❌ Không có câu hỏi nào phù hợp với bộ lọc!');
     const n = Math.min(parseInt(document.getElementById('count-input').value)||f.length, f.length);
     activeQ = f.sort(()=>Math.random()-0.5).slice(0,n);
     currentIdx=0; userAnswers={}; skippedQ.clear(); wrongQ=[]; startTime=Date.now();
     
-    switchView('quiz');
-    
+    window.switchView('quiz');
     const quizSidebar = document.getElementById('quiz-sidebar');
     const qTitleMobile = document.getElementById('q-title-mobile');
     
@@ -1015,7 +986,7 @@ function startQuiz() {
         document.getElementById('q-timer-box').classList.add('hidden');
     }
     renderQuestion();
-}
+};
 
 function startTimer(m) {
     let s=m*60; clearInterval(timerInterval);
@@ -1023,16 +994,14 @@ function startTimer(m) {
         s--;
         let min=Math.floor(s/60), sec=s%60;
         document.getElementById('q-timer').textContent=`${min<10?'0':''}${min}:${sec<10?'0':''}${sec}`;
-        if(s<=0){ clearInterval(timerInterval); showToast('⏰ Hết giờ làm bài! Đang nộp bài...'); submitQuiz(); }
+        if(s<=0){ clearInterval(timerInterval); window.showToast('⏰ Hết giờ làm bài! Đang nộp bài...'); window.submitQuiz(); }
     },1000);
 }
 
 function renderQuestion() {
     const q=activeQ[currentIdx];
     const textQTitle = `CÂU ${currentIdx+1} / ${activeQ.length}`;
-    document.getElementById('q-title').textContent = textQTitle;
-    document.getElementById('q-title-mobile').textContent = textQTitle;
-    
+    document.getElementById('q-title').textContent = textQTitle; document.getElementById('q-title-mobile').textContent = textQTitle;
     document.getElementById('q-text').textContent = q.question ? `"${q.question}"` : "";
     document.getElementById('q-pct').textContent = Math.round((currentIdx/activeQ.length)*100)+'%';
     document.getElementById('q-bar').style.width = Math.round((currentIdx/activeQ.length)*100)+'%';
@@ -1040,30 +1009,21 @@ function renderQuestion() {
     const imgBox = document.getElementById('q-image-box');
     const imgEl = document.getElementById('q-image');
     if(q.image && q.image.trim() !== '') {
-        imgEl.src = q.image.trim();
-        imgBox.classList.remove('hidden');
-        imgEl.onerror = () => imgBox.classList.add('hidden');
-    } else {
-        imgBox.classList.add('hidden');
-        imgEl.src = '';
-    }
+        imgEl.src = q.image.trim(); imgBox.classList.remove('hidden'); imgEl.onerror = () => imgBox.classList.add('hidden');
+    } else { imgBox.classList.add('hidden'); imgEl.src = ''; }
 
     const g=document.getElementById('q-nav-grid'); g.innerHTML='';
     activeQ.forEach((_,i)=>{
         const b=document.createElement('div'); b.textContent=i+1;
         b.className=`aspect-square rounded-xl font-bold flex items-center justify-center text-xs cursor-pointer transition-all ${
             i===currentIdx?'border-2 border-primaryBlue bg-primaryBlue/10 text-white shadow-[0_0_15px_rgba(59,130,246,0.3)]':
-            userAnswers[i]?'bg-accentBlue text-blue-900':
-            skippedQ.has(i)?'border border-warnOrange text-warnOrange':
-            'border border-gray-700 text-textMuted hover:border-gray-500'
+            userAnswers[i]?'bg-accentBlue text-blue-900': skippedQ.has(i)?'border border-warnOrange text-warnOrange': 'border border-gray-700 text-textMuted hover:border-gray-500'
         }`;
         b.onclick=()=>{currentIdx=i; renderQuestion();}; g.appendChild(b);
     });
 
     const cb=document.getElementById('choices-box'); cb.innerHTML='';
-    document.getElementById('practice-feedback').classList.add('hidden');
-    document.getElementById('btn-practice-next').classList.add('hidden');
-    document.getElementById('btn-practice-next').style.display='none';
+    document.getElementById('practice-feedback').classList.add('hidden'); document.getElementById('btn-practice-next').classList.add('hidden'); document.getElementById('btn-practice-next').style.display='none';
 
     let opts = ['A','B','C','D'].filter(k=>q[k.toLowerCase()]).sort(()=>Math.random()-0.5);
     opts.forEach((k,i)=>{
@@ -1079,12 +1039,10 @@ function selectOption(k) {
     if(quizMode==='practice'){
         if(userAnswers[currentIdx]) return;
         userAnswers[currentIdx]=k;
-        const ans=activeQ[currentIdx].answer.toUpperCase();
-        const isOk=k===ans;
+        const ans=activeQ[currentIdx].answer.toUpperCase(); const isOk=k===ans;
         document.querySelectorAll('.choice-item').forEach(el=>{
             el.classList.add('locked'); el.style.pointerEvents='none'; const dk=el.dataset.k;
-            if(dk===ans) el.classList.add('ans-correct');
-            else if(dk===k&&!isOk) el.classList.add('ans-wrong');
+            if(dk===ans) el.classList.add('ans-correct'); else if(dk===k&&!isOk) el.classList.add('ans-wrong');
         });
         const fb=document.getElementById('practice-feedback');
         fb.className=`mt-6 p-5 rounded-2xl relative z-10 ${isOk?'bg-successCyan/10 border border-successCyan/30 text-successCyan':'bg-errorRed/10 border border-errorRed/30 text-errorRed'}`;
@@ -1098,16 +1056,10 @@ function selectOption(k) {
     }
 }
 
-function practiceNext() {
-    if(currentIdx+1<activeQ.length){currentIdx++; renderQuestion();} else submitQuiz();
-}
+window.practiceNext = () => { if(currentIdx+1<activeQ.length){currentIdx++; renderQuestion();} else window.submitQuiz(); };
+window.quizSkip = () => { skippedQ.add(currentIdx); if(currentIdx+1<activeQ.length){currentIdx++; renderQuestion();} };
 
-function quizSkip() {
-    skippedQ.add(currentIdx);
-    if(currentIdx+1<activeQ.length){currentIdx++; renderQuestion();}
-}
-
-async function submitQuiz() {
+window.submitQuiz = async () => {
     clearInterval(timerInterval);
     let score=0; let rHTML='';
     wrongQ=[]; 
@@ -1139,28 +1091,22 @@ async function submitQuiz() {
     });
     
     const d=window.userData;
-    d.totalDone+=activeQ.length; d.totalCorrect+=score;
-    const pct=Math.round((score/activeQ.length)*100);
+    d.totalDone+=activeQ.length; d.totalCorrect+=score; const pct=Math.round((score/activeQ.length)*100);
 
     const now = new Date();
     const dStr = now.toLocaleDateString('vi-VN',{day:'numeric',month:'numeric',year:'numeric'});
     const tStr = now.getHours().toString().padStart(2,'0')+":"+now.getMinutes().toString().padStart(2,'0');
-    d.history.unshift({
-        date: dStr, time: tStr, domain: selSubject||'Tổng hợp',
-        score: score, total: activeQ.length, pct: pct, status: pct>=80?'Đạt':'Cần cải thiện'
-    });
+    d.history.unshift({ date: dStr, time: tStr, domain: selSubject||'Tổng hợp', score: score, total: activeQ.length, pct: pct, status: pct>=80?'Đạt':'Cần cải thiện' });
     if(d.history.length>20) d.history.pop();
     
     if(d.lastDate!==dStr){
-        let y=new Date(); y.setDate(y.getDate()-1);
-        const yStr = y.toLocaleDateString('vi-VN',{day:'numeric',month:'numeric',year:'numeric'});
-        if(d.lastDate===yStr||!d.lastDate) d.streak++; else d.streak=1;
-        d.lastDate=dStr;
+        let y=new Date(); y.setDate(y.getDate()-1); const yStr = y.toLocaleDateString('vi-VN',{day:'numeric',month:'numeric',year:'numeric'});
+        if(d.lastDate===yStr||!d.lastDate) d.streak++; else d.streak=1; d.lastDate=dStr;
     }
     
     await window.syncDataToCloud();
     if(quizMode==='exam') await window.pushLeaderboard(score, activeQ.length, selSubject);
-    updateGlobalUI();
+    window.updateGlobalUI();
     
     document.getElementById('res-pct-text').textContent=pct+'%';
     document.getElementById('res-circle').style.strokeDashoffset = 628 - (628 * pct / 100);
@@ -1169,29 +1115,26 @@ async function submitQuiz() {
     document.getElementById('res-score-total').textContent=activeQ.length;
     document.getElementById('res-review-list').innerHTML=rHTML;
     document.getElementById('btn-retry-wrong').style.display=wrongQ.length?'flex':'none';
-    switchView('result');
-}
+    window.switchView('result');
+};
 
-function retryWrong() {
+window.retryWrong = () => {
     activeQ=[...wrongQ].sort(()=>Math.random()-0.5);
     currentIdx=0; userAnswers={}; skippedQ.clear(); wrongQ=[]; startTime=Date.now();
-    switchView('quiz');
+    window.switchView('quiz');
     if(quizMode==='exam'){ document.getElementById('q-timer-box').classList.remove('hidden'); startTimer(Math.ceil(activeQ.length*0.9)); }
     renderQuestion();
-}
+};
 
 // ========================
 // GÓC MÙ 
 // ========================
 function renderBlindspot() {
-    const list = document.getElementById('blindspot-list');
-    list.innerHTML = '';
-    
+    const list = document.getElementById('blindspot-list'); list.innerHTML = '';
     if(!wrongQ || wrongQ.length === 0) {
         document.getElementById('blindspot-empty').classList.remove('hidden'); list.classList.add('hidden');
     } else {
         document.getElementById('blindspot-empty').classList.add('hidden'); list.classList.remove('hidden');
-        
         wrongQ.forEach((q, i) => {
             const imgHTML = q.image ? `<img src="${q.image}" class="max-w-full max-h-40 rounded-xl border border-gray-700 object-contain mt-3 mb-2">` : '';
             const cA = q.answer.toUpperCase();
@@ -1215,7 +1158,7 @@ function renderBlindspot() {
     }
 }
 
-async function addQuizToFlashcard(qid) {
+window.addQuizToFlashcard = async (qid) => {
     const q = wrongQ.find(x => x._id === qid);
     if(q) {
         if(!window.userData.blindSpots) window.userData.blindSpots = [];
@@ -1226,12 +1169,10 @@ async function addQuizToFlashcard(qid) {
                 _id: 'fc_saved_' + Date.now(), question: q.question, answer: ansText, explanation: q.explanation, image: q.image,
                 topic: q.topic || q.subject || 'Đã ghim', srs: { interval: 0, easeFactor: 2.5, dueDate: Date.now() }
             };
-            window.userData.blindSpots.push(newCard);
-            await window.syncDataToCloud();
-            showToast('📌 Đã lưu câu này vào bộ Flashcard!');
-        } else { showToast('⚠️ Câu này đã có trong Flashcard!'); }
+            window.userData.blindSpots.push(newCard); await window.syncDataToCloud(); window.showToast('📌 Đã lưu câu này vào bộ Flashcard!');
+        } else { window.showToast('⚠️ Câu này đã có trong Flashcard!'); }
     }
-}
+};
 
 // ========================
 // FLASHCARD UI DECKS & SM-2
@@ -1249,16 +1190,13 @@ function renderFlashcardDecks() {
         if(!c.srs || c.srs.dueDate <= Date.now()) deckMap[dName].due++;
     });
 
-    const deckGrid = document.getElementById('fc-deck-grid');
-    deckGrid.innerHTML = '';
-    
+    const deckGrid = document.getElementById('fc-deck-grid'); deckGrid.innerHTML = '';
     const deckNames = Object.keys(deckMap);
+    
     if(deckNames.length === 0) {
-        document.getElementById('fc-deck-empty').classList.remove('hidden');
-        deckGrid.classList.add('hidden');
+        document.getElementById('fc-deck-empty').classList.remove('hidden'); deckGrid.classList.add('hidden');
     } else {
-        document.getElementById('fc-deck-empty').classList.add('hidden');
-        deckGrid.classList.remove('hidden');
+        document.getElementById('fc-deck-empty').classList.add('hidden'); deckGrid.classList.remove('hidden');
         deckNames.forEach(d => {
             const isDue = deckMap[d].due > 0;
             deckGrid.innerHTML += `
@@ -1282,36 +1220,24 @@ function renderFlashcardDecks() {
 }
 
 window.startStudyDeck = (deckName) => {
-    currentDeck = deckName;
-    const now = Date.now();
+    currentDeck = deckName; const now = Date.now();
     const allCardsInDeck = (window.userData.blindSpots||[]).filter(c => (c.topic || 'Chưa phân loại') === deckName);
     activeFlashcards = allCardsInDeck.filter(c => (!c.srs || c.srs.dueDate <= now));
     
     document.getElementById('fc-deck-list').classList.add('hidden');
-    document.getElementById('fc-study-area').classList.remove('hidden');
-    document.getElementById('fc-study-area').classList.add('flex');
-    
+    document.getElementById('fc-study-area').classList.remove('hidden'); document.getElementById('fc-study-area').classList.add('flex');
     document.getElementById('fc-deck-title').textContent = currentDeck;
     document.getElementById('fc-counter').textContent = `${activeFlashcards.length} / ${allCardsInDeck.length} thẻ`;
 
-    // Nếu thư mục vừa được tạo và chưa có thẻ nào
     if(allCardsInDeck.length === 0) {
         document.getElementById('fc-empty').classList.remove('hidden');
-        document.getElementById('fc-empty-icon').textContent = 'note_add';
-        document.getElementById('fc-empty-title').textContent = 'Thư mục trống';
-        document.getElementById('fc-empty-desc').textContent = 'Bấm nút "+ Thêm Thẻ" ở góc trên để tạo thẻ đầu tiên nhé!';
+        document.getElementById('fc-empty-icon').textContent = 'note_add'; document.getElementById('fc-empty-title').textContent = 'Thư mục trống'; document.getElementById('fc-empty-desc').textContent = 'Bấm nút "+ Thêm Thẻ" ở góc trên để tạo thẻ đầu tiên nhé!';
         document.getElementById('fc-container').classList.add('hidden');
-    } 
-    // Nếu có thẻ nhưng đã học xong hết
-    else if(activeFlashcards.length === 0){
+    } else if(activeFlashcards.length === 0){
         document.getElementById('fc-empty').classList.remove('hidden');
-        document.getElementById('fc-empty-icon').textContent = 'task_alt';
-        document.getElementById('fc-empty-title').textContent = 'Hoàn thành!';
-        document.getElementById('fc-empty-desc').textContent = 'Bạn đã ôn xong toàn bộ thẻ đến hạn trong thư mục này.';
+        document.getElementById('fc-empty-icon').textContent = 'task_alt'; document.getElementById('fc-empty-title').textContent = 'Hoàn thành!'; document.getElementById('fc-empty-desc').textContent = 'Bạn đã ôn xong toàn bộ thẻ đến hạn trong thư mục này.';
         document.getElementById('fc-container').classList.add('hidden');
-    } 
-    // Còn thẻ để học
-    else {
+    } else {
         document.getElementById('fc-empty').classList.add('hidden');
         document.getElementById('fc-container').classList.remove('hidden');
         fcIdx=0; showCard();
@@ -1319,52 +1245,49 @@ window.startStudyDeck = (deckName) => {
 };
 
 window.closeStudyArea = () => {
-    document.getElementById('fc-study-area').classList.add('hidden');
-    document.getElementById('fc-study-area').classList.remove('flex');
+    document.getElementById('fc-study-area').classList.add('hidden'); document.getElementById('fc-study-area').classList.remove('flex');
     renderFlashcardDecks();
 };
 
 function calcNextReview(card, rating) {
     let srs = card.srs || { interval: 0, easeFactor: 2.5, dueDate: Date.now() };
-    let { interval, easeFactor } = srs;
-    const now = Date.now();
+    let { interval, easeFactor } = srs; const now = Date.now();
     let nextInterval, nextEase, label;
 
     if(rating === 'again') {
         nextInterval = 0; nextEase = Math.max(1.3, easeFactor - 0.2); label = '< 1 phút';
     } else if(rating === 'hard') {
-        nextInterval = Math.max(1, interval * 1.2); nextEase = Math.max(1.3, easeFactor - 0.15);
-        label = nextInterval < 1 ? 'Hôm nay' : Math.round(nextInterval) + ' ngày';
+        nextInterval = Math.max(1, interval * 1.2); nextEase = Math.max(1.3, easeFactor - 0.15); label = nextInterval < 1 ? 'Hôm nay' : Math.round(nextInterval) + ' ngày';
     } else if(rating === 'good') {
-        nextInterval = interval === 0 ? 1 : interval < 1 ? 4 : interval * easeFactor; nextEase = easeFactor;
-        label = nextInterval < 1 ? 'Hôm nay' : Math.round(nextInterval) + ' ngày';
+        nextInterval = interval === 0 ? 1 : interval < 1 ? 4 : interval * easeFactor; nextEase = easeFactor; label = nextInterval < 1 ? 'Hôm nay' : Math.round(nextInterval) + ' ngày';
     } else { 
-        nextInterval = interval === 0 ? 4 : interval * easeFactor * 1.3; nextEase = Math.min(4.0, easeFactor + 0.15);
-        label = Math.round(nextInterval) + ' ngày';
+        nextInterval = interval === 0 ? 4 : interval * easeFactor * 1.3; nextEase = Math.min(4.0, easeFactor + 0.15); label = Math.round(nextInterval) + ' ngày';
     }
-
     const dueDate = rating === 'again' ? now + 60 * 1000 : now + Math.max(1, Math.round(nextInterval)) * 24 * 60 * 60 * 1000;
     return { interval: nextInterval, easeFactor: nextEase, dueDate, label };
 }
 
 function showCard() {
-    if(!activeFlashcards.length) return startStudyDeck(currentDeck);
+    if(!activeFlashcards.length) return window.startStudyDeck(currentDeck);
     if(fcIdx>=activeFlashcards.length) fcIdx=0;
-    const q = activeFlashcards[fcIdx];
-    fcIsFlipped = false;
+    const q = activeFlashcards[fcIdx]; fcIsFlipped = false;
 
     document.getElementById('fc-card-inner').classList.remove('is-flipped');
     document.getElementById('fc-topic').textContent=q.topic||'Chung';
     document.getElementById('fc-q').textContent= q.question ? `"${q.question}"` : "";
 
-    const fcImgBox = document.getElementById('fc-image-front');
+    // CHÍNH LÀ ĐÂY! LẤY ĐÚNG ID VÀ CẬP NHẬT ẢNH MẶT TRƯỚC
+    const fcImgFront = document.getElementById('fc-image-front');
     if(q.image && q.image.trim()) {
-        fcImgBox.innerHTML = `<img src="${q.image.trim()}" class="max-w-full max-h-48 rounded-xl border border-gray-700 object-contain mx-auto shadow-lg">`;
-        fcImgBox.classList.remove('hidden');
-    } else { fcImgBox.classList.add('hidden'); }
+        fcImgFront.innerHTML = `<img src="${q.image.trim()}" class="max-w-full max-h-48 rounded-xl border border-gray-700 object-contain mx-auto shadow-lg">`;
+        fcImgFront.classList.remove('hidden');
+    } else { 
+        fcImgFront.classList.add('hidden'); 
+        fcImgFront.innerHTML = '';
+    }
 
     const getL = r => calcNextReview(q, r).label;
-    document.getElementById('srs-time-again').textContent = '<1 phút';
+    document.getElementById('srs-time-again').textContent = '< 1 phút';
     document.getElementById('srs-time-hard').textContent = getL('hard');
     document.getElementById('srs-time-good').textContent = getL('good');
     document.getElementById('srs-time-easy').textContent = getL('easy');
@@ -1372,11 +1295,15 @@ function showCard() {
     document.getElementById('fc-a').textContent = q.answer || '';
     document.getElementById('fc-exp').textContent=q.explanation||'Không có giải thích chi tiết.';
     
+    // CẬP NHẬT ẢNH MẶT SAU
     const fcImgBack = document.getElementById('fc-image-back');
     if(q.image && q.image.trim()) {
         fcImgBack.innerHTML = `<img src="${q.image.trim()}" class="max-w-full max-h-32 rounded-xl border border-gray-700 object-contain mx-auto shadow-lg mt-4">`;
         fcImgBack.classList.remove('hidden');
-    } else { fcImgBack.classList.add('hidden'); }
+    } else { 
+        fcImgBack.classList.add('hidden'); 
+        fcImgBack.innerHTML = '';
+    }
 
     lockSRSButtons();
 }
@@ -1388,42 +1315,30 @@ window.flipFlashcard = () => {
 };
 
 function lockSRSButtons() {
-    const box = document.getElementById('fc-actions');
-    box.style.opacity='0.4'; box.style.pointerEvents='none';
+    const box = document.getElementById('fc-actions'); box.style.opacity='0.4'; box.style.pointerEvents='none';
 }
-
 function unlockSRSButtons() {
-    setTimeout(()=>{
-        const box = document.getElementById('fc-actions');
-        box.style.opacity='1'; box.style.pointerEvents='auto';
-    }, 300);
+    setTimeout(()=>{ const box = document.getElementById('fc-actions'); box.style.opacity='1'; box.style.pointerEvents='auto'; }, 300);
 }
 
 window.sm2Answer = async (rating) => {
     if(!activeFlashcards.length) return;
-    const q = activeFlashcards[fcIdx];
-    const result = calcNextReview(q, rating);
-    
+    const q = activeFlashcards[fcIdx]; const result = calcNextReview(q, rating);
     const idx = window.userData.blindSpots.findIndex(c=>c._id===q._id);
-    if(idx !== -1) {
-        window.userData.blindSpots[idx].srs = {
-            interval: result.interval, easeFactor: result.easeFactor, dueDate: result.dueDate
-        };
-    }
+    if(idx !== -1) { window.userData.blindSpots[idx].srs = { interval: result.interval, easeFactor: result.easeFactor, dueDate: result.dueDate }; }
 
     const msgs = { 'again': '🔄 Sẽ ôn lại trong vài phút!', 'hard': '⚠️ Đã ghi nhận — sẽ ôn lại sớm!', 'good': '👍 Tốt! Hẹn gặp lại ' + result.label + '!', 'easy': '⭐ Xuất sắc! Lưu vào ghi nhớ dài hạn!' };
-    showToast(msgs[rating]);
-    await window.syncDataToCloud();
+    window.showToast(msgs[rating]); await window.syncDataToCloud();
 
     if(rating === 'again') {
         fcIdx = (fcIdx + 1) % Math.max(1, activeFlashcards.length);
     } else {
         activeFlashcards.splice(fcIdx, 1);
-        document.getElementById('fc-counter').textContent = `${activeFlashcards.length} thẻ`;
+        document.getElementById('fc-counter').textContent = `${activeFlashcards.length} / ${window.userData.blindSpots.filter(c => (c.topic || 'Chưa phân loại') === currentDeck).length} thẻ`;
         if(fcIdx >= activeFlashcards.length) fcIdx = 0;
     }
     
-    if(activeFlashcards.length > 0) showCard(); else startStudyDeck(currentDeck);
+    if(activeFlashcards.length > 0) showCard(); else window.startStudyDeck(currentDeck);
 };
 
 // ========================
@@ -1446,28 +1361,17 @@ async function loadLeaderboardUI() {
 
 function setupProfileView() {
     const d=window.userData;
-    document.getElementById('prof-name').value=d.name;
-    document.getElementById('prof-class').value=d.classInfo || 'YK24A - TNU';
-    document.getElementById('prof-ava-preview').textContent=d.avatar;
-    
+    document.getElementById('prof-name').value=d.name; document.getElementById('prof-class').value=d.classInfo || 'YK24A - TNU'; document.getElementById('prof-ava-preview').textContent=d.avatar;
     const box=document.getElementById('ava-select-box'); box.innerHTML='';
     AVATAR_LIST.forEach(a=>{
-        const btn=document.createElement('div');
-        btn.className=`text-4xl cursor-pointer p-2 rounded-2xl border-2 shrink-0 ${a===d.avatar?'border-primaryBlue bg-primaryBlue/20':'border-transparent hover:bg-gray-800'}`;
-        btn.textContent=a; btn.onclick=()=>{d.avatar=a; setupProfileView();}; box.appendChild(btn);
+        const btn=document.createElement('div'); btn.className=`text-4xl cursor-pointer p-2 rounded-2xl border-2 shrink-0 ${a===d.avatar?'border-primaryBlue bg-primaryBlue/20':'border-transparent hover:bg-gray-800'}`; btn.textContent=a; btn.onclick=()=>{d.avatar=a; setupProfileView();}; box.appendChild(btn);
     });
 
     const hTb=document.getElementById('history-table'); hTb.innerHTML='';
-    if(!d.history.length) {
-        hTb.innerHTML='<tr><td colspan="4" class="py-10 text-center text-textMuted">Chưa có lịch sử làm bài.</td></tr>';
+    if(!d.history.length) { hTb.innerHTML='<tr><td colspan="4" class="py-10 text-center text-textMuted">Chưa có lịch sử làm bài.</td></tr>';
     } else {
         d.history.forEach(h=>{
-            hTb.innerHTML+=`<tr class="hover:bg-mainBg/40 transition-colors">
-                <td class="py-5 px-6"><div class="text-white font-bold">${h.date}</div><div class="text-textMuted text-[10px] mt-0.5">${h.time}</div></td>
-                <td class="py-5 px-4"><span class="bg-gray-800 text-gray-300 px-4 py-1.5 rounded-full text-[10px] font-bold border border-gray-700">${h.domain}</span></td>
-                <td class="py-5 px-4 font-black"><span class="text-white">${h.score}/${h.total}</span> <span class="${h.pct>=80?'text-successCyan':'text-warnOrange'} text-[11px] ml-1">(${h.pct}%)</span></td>
-                <td class="py-5 px-4"><div class="flex items-center gap-2 ${h.status==='Đạt'?'text-primaryBlue':'text-warnOrange'} text-[11px] font-bold uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full ${h.status==='Đạt'?'bg-primaryBlue':'bg-warnOrange'}"></span>${h.status}</div></td>
-            </tr>`;
+            hTb.innerHTML+=`<tr class="hover:bg-mainBg/40 transition-colors"><td class="py-5 px-6"><div class="text-white font-bold">${h.date}</div><div class="text-textMuted text-[10px] mt-0.5">${h.time}</div></td><td class="py-5 px-4"><span class="bg-gray-800 text-gray-300 px-4 py-1.5 rounded-full text-[10px] font-bold border border-gray-700">${h.domain}</span></td><td class="py-5 px-4 font-black"><span class="text-white">${h.score}/${h.total}</span> <span class="${h.pct>=80?'text-successCyan':'text-warnOrange'} text-[11px] ml-1">(${h.pct}%)</span></td><td class="py-5 px-4"><div class="flex items-center gap-2 ${h.status==='Đạt'?'text-primaryBlue':'text-warnOrange'} text-[11px] font-bold uppercase tracking-wider"><span class="w-1.5 h-1.5 rounded-full ${h.status==='Đạt'?'bg-primaryBlue':'bg-warnOrange'}"></span>${h.status}</div></td></tr>`;
         });
     }
 
@@ -1481,9 +1385,7 @@ function setupProfileView() {
 window.saveProfile = async () => {
     window.userData.name = document.getElementById('prof-name').value.trim() || 'Khách';
     window.userData.classInfo = document.getElementById('prof-class').value.trim() || 'YK24A - TNU';
-    await window.syncDataToCloud();
-    updateGlobalUI();
-    showToast('✅ Lưu thông tin cá nhân thành công!');
+    await window.syncDataToCloud(); window.updateGlobalUI(); window.showToast('✅ Lưu thông tin cá nhân thành công!');
 };
 </script>
 </body>
