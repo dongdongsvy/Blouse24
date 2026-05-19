@@ -58,10 +58,13 @@
         .choice-item.ans-wrong { border-color: #f43f5e !important; background: rgba(244,63,94,0.1) !important; }
         .choice-item.ans-wrong .c-key { background: #f43f5e !important; color: #fff !important; }
 
-        .fc-scene { perspective: 1000px; width: 100%; min-height: 350px; cursor: pointer; }
-        .fc-card { position: relative; width: 100%; height: 100%; min-height: 350px; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
+        .fc-scene { perspective: 1000px; width: 100%; min-height: 400px; max-height: calc(100vh - 220px); cursor: pointer; }
+        .fc-card { position: relative; width: 100%; height: 100%; min-height: 400px; transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1); transform-style: preserve-3d; }
         .fc-card.is-flipped { transform: rotateY(180deg); }
-        .fc-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 32px; padding: 2rem; display: flex; flex-direction: column; justify-content: center; overflow-y: auto; }
+        .fc-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 32px; padding: 2rem; display: flex; flex-direction: column; justify-content: flex-start; overflow-y: auto; overflow-x: hidden; }
+        .fc-face::-webkit-scrollbar { width: 10px; }
+        .fc-face::-webkit-scrollbar-track { background: transparent; }
+        .fc-face::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 999px; }
         .fc-front { background: #1c1e26; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
         .fc-back { background: rgba(59,130,246,0.05); border: 2px solid #3b82f6; transform: rotateY(180deg); }
 
@@ -712,7 +715,7 @@ window.deleteCurrentFlashcard = async (cardId) => {
                                 </div>
                                 <div class="fc-face fc-back">
                                     <div class="absolute top-6 left-8 text-[10px] font-black text-successGreen uppercase tracking-[2px] bg-successGreen/10 px-3 py-1 rounded-lg border border-successGreen/20">MẶT SAU</div>
-                                    <div class="bg-mainBg/50 p-5 rounded-2xl border border-primaryBlue/30 mb-4 mt-8"><h4 class="text-white font-bold text-lg" id="fc-a">Đáp án...</h4></div>
+                                    <div class="bg-mainBg/50 p-10 rounded-2xl border border-primaryBlue/30 mb-6 mt-8 min-h-48 flex flex-col justify-start"><h4 class="text-white font-bold text-xl leading-relaxed break-words whitespace-pre-wrap" id="fc-a">Đáp án...</h4></div>
                                     <div id="fc-image-back" class="hidden flex justify-center mb-4">
                                         <img id="fc-img-back-el" src="" class="max-w-full max-h-72 rounded-xl border border-gray-700 object-contain mx-auto shadow-lg mt-4 cursor-zoom-in hover:opacity-90 transition-opacity" onclick="openImgLightbox(this.src)" title="Bấm để phóng to">
                                     </div>
