@@ -207,22 +207,43 @@
     const snap = await getDocs(q); return snap.docs.map(d => d.data());
   };
 
-  // 🔥 DÁN MÃ API IMGBB CỦA SẾP VÀO ĐÂY 🔥
-  const IMGBB_API_KEY = "2c386b7e73f15665f2779d9f81eb9370";
+  // ☁️ CLOUDINARY UNSIGNED UPLOAD
+  const CLOUDINARY_CLOUD_NAME = "dc1duq6sv";
+  const CLOUDINARY_UPLOAD_PRESET = "blouse24_app";
 
   window.uploadToImgBB = async (file) => {
-      const formData = new FormData();
-      formData.append("image", file);
       try {
-          const res = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-              method: "POST",
-              body: formData
-          });
+          // Kiểm tra định dạng file
+          const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/bmp'];
+          if (!validTypes.includes(file.type)) {
+              showToast('❌ Chỉ hỗ trợ ảnh JPG, PNG, GIF, WEBP, BMP!');
+              return null;
+          }
+          // Kiểm tra dung lượng (tối đa 10MB)
+          if (file.size > 10 * 1024 * 1024) {
+              showToast('❌ Ảnh quá lớn! Vui lòng chọn ảnh dưới 10MB.');
+              return null;
+          }
+
+          const formData = new FormData();
+          formData.append('file', file);
+          formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+          formData.append('folder', 'blouse24_flashcards');
+
+          const res = await fetch(
+              `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+              { method: 'POST', body: formData }
+          );
+
+          if (!res.ok) throw new Error(`Lỗi HTTP: ${res.status}`);
           const data = await res.json();
-          if(data.success) return data.data.url;
-          else throw new Error(data.error.message);
+
+          if (data.secure_url) return data.secure_url;
+          else throw new Error(data.error?.message || 'Không nhận được URL ảnh');
       } catch(err) {
-          console.error(err); return null;
+          console.error('Lỗi upload Cloudinary:', err);
+          showToast('❌ Lỗi tải ảnh lên! ' + err.message);
+          return null;
       }
   };
 
@@ -868,16 +889,12 @@ window.confirmCreateDeck = () => {
     const name = document.getElementById('new-deck-name').value.trim();
     if(!name) return showToast('⚠️ Vui lòng nhập tên thư mục!');
     document.getElementById('create-deck-modal').classList.remove('active');
-    
     currentDeck = name;
     activeFlashcards = [];
-    
     document.getElementById('fc-deck-list').style.display = 'none';
     document.getElementById('fc-study-area').style.display = 'flex';
-    
     document.getElementById('fc-deck-title').textContent = currentDeck;
     document.getElementById('fc-counter').textContent = `0 / 0 thẻ`;
-
     document.getElementById('fc-empty').classList.remove('hidden');
     document.getElementById('fc-empty-icon').textContent = 'note_add';
     document.getElementById('fc-empty-title').textContent = 'Thư mục trống';
@@ -1360,7 +1377,7 @@ function showCard() {
         fcImgFrontEl.src = q.image.trim();
         fcImgFrontEl.onerror = () => fcImgFront.classList.add('hidden');
         fcImgFront.classList.remove('hidden');
-    } else { 
+    } else {
         fcImgFront.classList.add('hidden');
         fcImgFrontEl.src = '';
     }
@@ -1380,7 +1397,7 @@ function showCard() {
         fcImgBackEl.src = q.image.trim();
         fcImgBackEl.onerror = () => fcImgBack.classList.add('hidden');
         fcImgBack.classList.remove('hidden');
-    } else { 
+    } else {
         fcImgBack.classList.add('hidden');
         fcImgBackEl.src = '';
     }
