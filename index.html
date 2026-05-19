@@ -341,17 +341,31 @@ window.deleteCurrentFlashcard = async (cardId) => {
             await deleteDoc(doc(window.db, "community_flashcards", cardId));
         }
 
-        // Đồng thời xoá thẻ đó khỏi mảng dữ liệu đang chạy trong ứng dụng để UI cập nhật ngay lập tức
-        // Giả sử mảng chứa thẻ của bạn tên là 'activeFlashcards' hoặc 'allFlashcards'
-        if (window.activeFlashcards) {
-            window.activeFlashcards = window.activeFlashcards.filter(card => card._id !== cardId && card.id !== cardId);
+        // Xoá khỏi userData.blindSpots (nguồn dữ liệu chính)
+        if (window.userData && window.userData.blindSpots) {
+            window.userData.blindSpots = window.userData.blindSpots.filter(card => card._id !== cardId && card.id !== cardId);
+            await window.syncDataToCloud();
         }
-        
+
         showToast('🗑️ Đã xoá thẻ thành công!');
 
-        // Chuyển sang thẻ tiếp theo hoặc render lại giao diện học
-        if (typeof nextFc === 'function') {
-            nextFc(); // Gọi hàm chuyển thẻ tiếp theo có sẵn trong file của bạn
+        // Cập nhật activeFlashcards và chuyển thẻ tiếp theo (dùng biến global từ script thường)
+        if (typeof activeFlashcards !== 'undefined') {
+            // Xoá thẻ khỏi mảng đang học
+            const idx = activeFlashcards.findIndex(c => c._id === cardId || c.id === cardId);
+            if (idx !== -1) {
+                activeFlashcards.splice(idx, 1);
+            }
+            // Cập nhật counter
+            document.getElementById('fc-counter').textContent = `${activeFlashcards.length} thẻ`;
+            // Chuyển thẻ tiếp theo hoặc quay về danh sách
+            if (activeFlashcards.length > 0) {
+                if (typeof fcIdx !== 'undefined' && fcIdx >= activeFlashcards.length) fcIdx = 0;
+                if (typeof showCard === 'function') showCard();
+                if (typeof updateFcNavCounter === 'function') updateFcNavCounter();
+            } else {
+                if (typeof startStudyDeck === 'function') startStudyDeck(currentDeck);
+            }
         } else {
             location.reload();
         }
@@ -718,7 +732,7 @@ window.deleteCurrentFlashcard = async (cardId) => {
                                 <span class="srs-time" id="srs-time-easy">4 Ngày</span>
                             </button>
                             <div class="flex justify-center mt-4 w-full max-w-md mx-auto px-4">
-                            <button onclick="window.deleteCurrentFlashcard()" 
+                            <button onclick="window.deleteCurrentFlashcard(activeFlashcards[fcIdx]?._id)" 
                              class="w-full flex items-center justify-center gap-2 bg-errorRed/10 hover:bg-errorRed text-errorRed hover:text-white border border-errorRed/20 py-2.5 rounded-xl text-xs font-bold tracking-wide uppercase transition-all shadow-md"
                             title="Xoá vĩnh viễn thẻ lỗi này">
         <span class="material-symbols-outlined text-[16px]">delete_forever</span>
@@ -965,6 +979,7 @@ document.getElementById('quiz-file-input').onchange = e => {
     r.onload = ev => {
         let rows = f.name.endsWith('.csv') ? parseCSVRaw(ev.target.result) : parseXLSXRaw(ev.target.result);
         loadQ(rows);
+        switchView('setup'); // Luôn chuyển sang setup khi tải file thủ công
         document.getElementById('loader').classList.remove('active');
         showToast('✅ Tải file trắc nghiệm thành công!');
     };
@@ -1002,7 +1017,12 @@ function loadQ(rows) {
     if(allQ.length === 0) return;
     const subjects = [...new Set(allQ.map(q=>q.subject||'Chung').filter(Boolean))];
     selSubject = subjects[0]||""; selTopics.clear();
-    renderSubjectFilter(subjects); updateTopicFilter(); updateCount(); switchView('setup');
+    renderSubjectFilter(subjects); updateTopicFilter(); updateCount();
+    // Chỉ chuyển sang setup nếu người dùng đang ở dashboard hoặc chủ động tải file
+    const currentView = document.querySelector('.view-section.active');
+    if(currentView && (currentView.id === 'view-dashboard' || currentView.id === 'view-setup')) {
+        switchView('setup');
+    }
 }
 
 async function loadFlashcards(rows) {
@@ -1569,38 +1589,7 @@ function showCard() {
 window.flipFlashcard = () => {
     fcIsFlipped = !fcIsFlipped;
     document.getElementById('fc-card-inner').classList.toggle('is-flipped', fcIsFlipped);
-    
-    if(fcIsFlipped) {
-        unlockSRSButtons();
-        
-        // --- TỰ ĐỘNG CHÈN NÚT XÓA KHI LẬT THẺ THÀNH CÔNG ---
-        const actionsBox = document.getElementById('fc-actions');
-        if (actionsBox) {
-            // Xóa nút cũ để tránh bị lặp nút
-            const oldDelBtn = document.getElementById('auto-delete-fc-btn');
-            if (oldDelBtn) oldDelBtn.remove();
-
-            // Tạo khối nút bấm mới nằm ngay dưới bảng nút chọn SRS
-            const btnContainer = document.createElement('div');
-            btnContainer.id = 'auto-delete-fc-btn';
-            btnContainer.className = "flex justify-center mt-4 w-full max-w-md mx-auto px-4";
-            btnContainer.innerHTML = `
-                <button onclick="window.deleteCurrentFlashcard()" 
-                        class="w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-600 text-red-500 hover:text-white border border-red-500/20 py-2.5 rounded-xl text-xs font-bold tracking-wide uppercase transition-all shadow-md"
-                        title="Xoá vĩnh viễn thẻ lỗi này">
-                    <span class="material-symbols-outlined text-[16px]">delete_forever</span>
-                    Xoá thẻ ghi nhớ này (Thẻ lỗi)
-                </button>
-            `;
-            // Đẩy nút hiển thị ra màn hình ngay sau khối fc-actions
-            actionsBox.parentNode.insertBefore(btnContainer, actionsBox.nextSibling);
-        }
-    } else {
-        lockSRSButtons();
-        // Khi úp thẻ lại thì ẩn luôn nút xóa
-        const oldDelBtn = document.getElementById('auto-delete-fc-btn');
-        if (oldDelBtn) oldDelBtn.remove();
-    }
+    if(fcIsFlipped) unlockSRSButtons(); else lockSRSButtons();
 };
 
 function lockSRSButtons() {
