@@ -116,21 +116,31 @@
     </div>
 </div>
 
+<div id="create-deck-modal" class="overlay">
+    <div class="bg-cardBg p-8 rounded-[32px] max-w-sm w-full border border-gray-700 shadow-2xl relative text-center">
+        <button onclick="document.getElementById('create-deck-modal').classList.remove('active')" class="absolute top-6 right-6 text-textMuted hover:text-white"><span class="material-symbols-outlined">close</span></button>
+        <div class="w-16 h-16 bg-blue-900/30 text-primaryBlue rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 border border-blue-900/50"><span class="material-symbols-outlined icon-filled">create_new_folder</span></div>
+        <h3 class="text-2xl font-black text-white mb-2">Tạo Thư Mục Mới</h3>
+        <p class="text-textMuted text-sm mb-6">Nhập tên môn học hoặc chủ đề bạn muốn tạo thẻ ghi nhớ.</p>
+        <input type="text" id="new-deck-name" placeholder="Ví dụ: Giải phẫu học..." class="w-full bg-mainBg border border-gray-700 rounded-xl p-4 text-white focus:border-primaryBlue outline-none text-center font-bold mb-6">
+        <button onclick="confirmCreateDeck()" class="w-full bg-primaryBlue text-white font-bold py-3.5 rounded-xl hover:brightness-110 transition-all shadow-lg">Tiếp tục tạo thẻ</button>
+    </div>
+</div>
+
 <div id="create-fc-modal" class="overlay">
     <div class="bg-cardBg p-8 rounded-[32px] max-w-md w-full border border-gray-700 shadow-2xl relative">
         <button onclick="document.getElementById('create-fc-modal').classList.remove('active')" class="absolute top-6 right-6 text-textMuted hover:text-white"><span class="material-symbols-outlined">close</span></button>
-        <h3 class="text-2xl font-black text-white mb-6">Tạo Thẻ Cộng Đồng</h3>
+        <h3 class="text-2xl font-black text-white mb-2">Tạo Thẻ Mới</h3>
+        <div class="bg-blue-900/20 text-primaryBlue text-xs font-bold px-3 py-1.5 rounded-lg mb-6 inline-block border border-blue-900/40">
+            Thư mục: <span id="cfc-current-deck-name" class="uppercase tracking-widest"></span>
+        </div>
         <div class="space-y-4">
-            <div>
-                <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-1 block">Chủ đề / Thư mục thẻ</label>
-                <input type="text" id="cfc-topic" placeholder="Ví dụ: Ký sinh trùng..." class="w-full bg-mainBg border border-gray-700 rounded-xl p-3 text-white focus:border-primaryBlue outline-none text-sm">
-            </div>
             <div>
                 <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-1 block">Mặt trước (Câu hỏi)</label>
                 <textarea id="cfc-q" class="w-full bg-mainBg border border-gray-700 rounded-xl p-3 text-white focus:border-primaryBlue outline-none text-sm" rows="2"></textarea>
             </div>
             <div>
-                <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-1 block flex justify-between">Tải Ảnh Lên <span id="cfc-img-status" class="text-primaryBlue font-medium"></span></label>
+                <label class="text-[10px] font-black text-textMuted uppercase tracking-widest mb-1 block flex justify-between">Tải Ảnh Lên (Tùy chọn) <span id="cfc-img-status" class="text-primaryBlue font-medium"></span></label>
                 <input type="file" id="cfc-img-file" accept="image/*" class="w-full bg-mainBg border border-gray-700 rounded-xl p-2 text-white focus:border-primaryBlue outline-none text-sm cursor-pointer file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-primaryBlue file:text-white">
             </div>
             <div>
@@ -198,9 +208,8 @@
   };
 
   // 🔥 DÁN MÃ API IMGBB CỦA SẾP VÀO ĐÂY 🔥
-  const IMGBB_API_KEY = "2c386b7e73f15665f2779d9f81eb9370"; // <--- Thay mã của sếp vào chỗ này
+  const IMGBB_API_KEY = "2c386b7e73f15665f2779d9f81eb9370";
 
-  // Hàm tải ảnh lên ImgBB
   window.uploadToImgBB = async (file) => {
       const formData = new FormData();
       formData.append("image", file);
@@ -217,14 +226,12 @@
       }
   };
 
-  // Hàm xuất thẻ ra cộng đồng (Global Flashcards)
+  // Kéo và đẩy thẻ Cộng đồng
   window.publishCommunityCard = async (cardObj) => {
       try {
           await setDoc(doc(window.db, "community_flashcards", cardObj._id), cardObj);
       } catch(err) { console.error("Lỗi chia sẻ cộng đồng: ", err); }
   };
-
-  // Hàm kéo thẻ cộng đồng về
   window.fetchCommunityCards = async () => {
       try {
           const snap = await getDocs(collection(window.db, "community_flashcards"));
@@ -467,8 +474,8 @@
                         <p class="text-textMuted text-sm">Học lặp lại ngắt quãng (SM-2 Anki) theo từng chủ đề.</p>
                     </div>
                     <div class="flex items-center gap-3 flex-wrap">
-                        <button onclick="document.getElementById('create-fc-modal').classList.add('active')" class="bg-primaryBlue text-white px-5 py-3 rounded-2xl flex items-center gap-2 hover:brightness-110 transition-all text-sm font-bold shadow-lg shrink-0">
-                            <span class="material-symbols-outlined text-[20px]">add</span> Tạo thẻ
+                        <button onclick="document.getElementById('create-deck-modal').classList.add('active')" class="bg-primaryBlue text-white px-5 py-3 rounded-2xl flex items-center gap-2 hover:brightness-110 transition-all text-sm font-bold shadow-lg shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">create_new_folder</span> Tạo Thư Mục
                         </button>
                     </div>
                 </header>
@@ -479,7 +486,7 @@
                     <div id="fc-deck-empty" class="text-center py-24 hidden bg-cardBg rounded-[32px] border border-gray-700/30 shadow-xl mt-6">
                         <span class="material-symbols-outlined text-6xl text-successGreen mb-6">task_alt</span>
                         <h3 class="text-2xl font-bold text-white mb-2">Thư viện trống!</h3>
-                        <p class="text-textMuted">Hãy bấm Đồng bộ Dữ liệu ở trang chủ hoặc tự tạo thẻ nhé.</p>
+                        <p class="text-textMuted">Hãy bấm Đồng bộ Dữ liệu ở trang chủ hoặc tự tạo thư mục thẻ nhé.</p>
                     </div>
                 </div>
 
@@ -488,16 +495,26 @@
                         <button onclick="closeStudyArea()" class="text-textMuted hover:text-white flex items-center gap-1 font-bold text-sm bg-cardBg px-4 py-2 rounded-lg border border-gray-700">
                             <span class="material-symbols-outlined text-[18px]">arrow_back</span> Quay lại
                         </button>
-                        <div class="bg-cardBg border border-gray-700 px-4 py-2 rounded-xl flex items-center gap-2 shadow-lg"><span class="text-textMuted text-xs font-bold uppercase tracking-widest">Cần ôn:</span><span class="text-primaryBlue font-black" id="fc-counter">0 thẻ</span></div>
+                        <h3 class="text-white font-bold text-xl uppercase tracking-wider truncate mx-4" id="fc-deck-title">TÊN THƯ MỤC</h3>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openAddCardModal()" class="bg-primaryBlue text-white px-4 py-2 rounded-lg flex items-center gap-1 hover:brightness-110 text-sm font-bold">
+                                <span class="material-symbols-outlined text-[18px]">add</span> Thêm Thẻ
+                            </button>
+                            <div class="bg-cardBg border border-gray-700 px-3 py-2 rounded-lg hidden md:flex items-center gap-2 shadow-lg"><span class="text-textMuted text-[10px] font-bold uppercase tracking-widest">Tiến độ:</span><span class="text-primaryBlue font-black text-sm" id="fc-counter">0 thẻ</span></div>
+                        </div>
                     </div>
 
-                    <div id="fc-empty" class="text-center py-24 hidden bg-cardBg rounded-[32px] border border-gray-700/30 shadow-xl w-full max-w-4xl"><span class="material-symbols-outlined text-6xl text-successGreen mb-6">task_alt</span><h3 class="text-2xl font-bold text-white mb-2">Hoàn thành bộ thẻ này!</h3><p class="text-textMuted">Bạn không có thẻ nào đến hạn trong chủ đề này.</p></div>
+                    <div id="fc-empty" class="text-center py-24 hidden bg-cardBg rounded-[32px] border border-gray-700/30 shadow-xl w-full max-w-4xl">
+                        <span id="fc-empty-icon" class="material-symbols-outlined text-6xl text-successGreen mb-6">task_alt</span>
+                        <h3 id="fc-empty-title" class="text-2xl font-bold text-white mb-2">Hoàn thành!</h3>
+                        <p id="fc-empty-desc" class="text-textMuted">Bạn không có thẻ nào đến hạn trong chủ đề này.</p>
+                    </div>
 
                     <div id="fc-container" class="w-full flex flex-col items-center">
                         <div class="fc-scene w-full max-w-4xl" onclick="flipFlashcard()">
                             <div class="fc-card" id="fc-card-inner">
                                 <div class="fc-face fc-front">
-                                    <div class="absolute top-6 left-8 text-[10px] font-black text-primaryBlue uppercase tracking-[2px] bg-primaryBlue/10 px-3 py-1 rounded-lg border border-primaryBlue/20" id="fc-topic">CHỦ ĐỀ</div>
+                                    <div class="absolute top-6 left-8 text-[10px] font-black text-primaryBlue uppercase tracking-[2px] bg-primaryBlue/10 px-3 py-1 rounded-lg border border-primaryBlue/20">MẶT TRƯỚC</div>
                                     <div id="fc-image-front" class="hidden flex justify-center mb-4 mt-8"></div>
                                     <h3 class="font-serif text-xl md:text-2xl text-gray-200 leading-relaxed text-center italic px-4 mt-4" id="fc-q">Câu hỏi...</h3>
                                     <div class="mt-auto pt-6 w-full text-center text-textMuted text-xs font-bold uppercase tracking-widest animate-pulse flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">touch_app</span> Chạm để lật thẻ</div>
@@ -839,7 +856,98 @@ async function loadFlashcards(rows) {
 }
 
 // ========================
-// SETUP QUIZ 
+// LOGIC TẠO THƯ MỤC VÀ TẠO THẺ CÁ NHÂN (QUIZLET STYLE)
+// ========================
+
+// Mở form tạo Thư mục mới
+window.confirmCreateDeck = () => {
+    const name = document.getElementById('new-deck-name').value.trim();
+    if(!name) return showToast('⚠️ Vui lòng nhập tên thư mục!');
+    document.getElementById('create-deck-modal').classList.remove('active');
+    
+    // Khởi tạo trạng thái rỗng cho thư mục vừa tạo và nhảy vào đó luôn
+    currentDeck = name;
+    activeFlashcards = [];
+    
+    document.getElementById('fc-deck-list').classList.add('hidden');
+    document.getElementById('fc-study-area').classList.remove('hidden');
+    document.getElementById('fc-study-area').classList.add('flex');
+    
+    document.getElementById('fc-deck-title').textContent = currentDeck;
+    document.getElementById('fc-counter').textContent = `0 / 0 thẻ`;
+
+    // Hiển thị trạng thái hoàn toàn trống
+    document.getElementById('fc-empty').classList.remove('hidden');
+    document.getElementById('fc-empty-icon').textContent = 'note_add';
+    document.getElementById('fc-empty-title').textContent = 'Thư mục trống';
+    document.getElementById('fc-empty-desc').textContent = 'Bấm nút "+ Thêm Thẻ" ở góc trên để tạo thẻ đầu tiên nhé!';
+    document.getElementById('fc-container').classList.add('hidden');
+};
+
+// Mở form tạo Thẻ mới trong Thư mục hiện tại
+window.openAddCardModal = () => {
+    document.getElementById('cfc-current-deck-name').textContent = currentDeck;
+    document.getElementById('create-fc-modal').classList.add('active');
+};
+
+// Lưu thẻ mới
+async function saveCustomFc() {
+    // Lấy tên thư mục đang đứng thay vì bắt user gõ
+    const topic = currentDeck || 'Thẻ tự tạo';
+    const q = document.getElementById('cfc-q').value.trim();
+    const a = document.getElementById('cfc-a').value.trim();
+    let exp = document.getElementById('cfc-exp').value.trim();
+    const fileInput = document.getElementById('cfc-img-file');
+    
+    if(!q && fileInput.files.length === 0) return showToast('⚠️ Mặt trước phải có chữ hoặc ảnh!');
+    if(!a) return showToast('⚠️ Bạn chưa nhập đáp án (mặt sau)!');
+    
+    let imgUrl = "";
+
+    if (fileInput.files.length > 0) {
+        document.getElementById('cfc-img-status').textContent = "(Đang tải ảnh lên...)";
+        imgUrl = await window.uploadToImgBB(fileInput.files[0]);
+        if(!imgUrl) {
+            document.getElementById('cfc-img-status').textContent = "";
+            return showToast('❌ Lỗi tải ảnh lên Imgur! Hãy thử lại.');
+        }
+    }
+    
+    const authorName = window.userData.name || 'Bác sĩ ẩn danh';
+    if(exp) exp += ` \n(Tạo bởi: ${authorName})`;
+    else exp = `(Tạo bởi: ${authorName})`;
+
+    const newCard = {
+        _id: 'fc_user_' + Date.now() + '_' + window.currentUser.uid,
+        question: q, answer: a, image: imgUrl, explanation: exp, topic: topic,
+        author: authorName,
+        createdAt: Date.now()
+    };
+    
+    // Đẩy lên Cộng Đồng Firebase (Nếu mạng lỗi nó sẽ báo ở Console, nhưng vẫn lưu Local)
+    await window.publishCommunityCard(newCard);
+
+    const myCard = {...newCard, srs: { interval: 0, easeFactor: 2.5, dueDate: Date.now() }};
+    if(!window.userData.blindSpots) window.userData.blindSpots = [];
+    window.userData.blindSpots.push(myCard);
+    await window.syncDataToCloud();
+    
+    document.getElementById('create-fc-modal').classList.remove('active');
+    document.getElementById('cfc-q').value = '';
+    document.getElementById('cfc-a').value = '';
+    document.getElementById('cfc-img-file').value = '';
+    document.getElementById('cfc-exp').value = '';
+    document.getElementById('cfc-img-status').textContent = "";
+    document.getElementById('new-deck-name').value = '';
+    
+    showToast('✅ Đã chia sẻ thẻ lên Cộng Đồng!');
+    
+    // Load lại bộ thẻ đang xem
+    startStudyDeck(currentDeck);
+}
+
+// ========================
+// SETUP QUIZ (BỎ ĐỘ KHÓ)
 // ========================
 function renderSubjectFilter(arr) {
     const div = document.getElementById('subj-filters'); div.innerHTML='';
@@ -1173,32 +1281,48 @@ function renderFlashcardDecks() {
     document.getElementById('fc-study-area').classList.add('hidden');
 }
 
-function startStudyDeck(deckName) {
+window.startStudyDeck = (deckName) => {
     currentDeck = deckName;
     const now = Date.now();
-    activeFlashcards = (window.userData.blindSpots||[]).filter(c => (c.topic || 'Chưa phân loại') === deckName && (!c.srs || c.srs.dueDate <= now));
+    const allCardsInDeck = (window.userData.blindSpots||[]).filter(c => (c.topic || 'Chưa phân loại') === deckName);
+    activeFlashcards = allCardsInDeck.filter(c => (!c.srs || c.srs.dueDate <= now));
     
     document.getElementById('fc-deck-list').classList.add('hidden');
     document.getElementById('fc-study-area').classList.remove('hidden');
     document.getElementById('fc-study-area').classList.add('flex');
     
-    document.getElementById('fc-counter').textContent = `${activeFlashcards.length} thẻ`;
+    document.getElementById('fc-deck-title').textContent = currentDeck;
+    document.getElementById('fc-counter').textContent = `${activeFlashcards.length} / ${allCardsInDeck.length} thẻ`;
 
-    if(!activeFlashcards.length){
+    // Nếu thư mục vừa được tạo và chưa có thẻ nào
+    if(allCardsInDeck.length === 0) {
         document.getElementById('fc-empty').classList.remove('hidden');
+        document.getElementById('fc-empty-icon').textContent = 'note_add';
+        document.getElementById('fc-empty-title').textContent = 'Thư mục trống';
+        document.getElementById('fc-empty-desc').textContent = 'Bấm nút "+ Thêm Thẻ" ở góc trên để tạo thẻ đầu tiên nhé!';
         document.getElementById('fc-container').classList.add('hidden');
-    } else {
+    } 
+    // Nếu có thẻ nhưng đã học xong hết
+    else if(activeFlashcards.length === 0){
+        document.getElementById('fc-empty').classList.remove('hidden');
+        document.getElementById('fc-empty-icon').textContent = 'task_alt';
+        document.getElementById('fc-empty-title').textContent = 'Hoàn thành!';
+        document.getElementById('fc-empty-desc').textContent = 'Bạn đã ôn xong toàn bộ thẻ đến hạn trong thư mục này.';
+        document.getElementById('fc-container').classList.add('hidden');
+    } 
+    // Còn thẻ để học
+    else {
         document.getElementById('fc-empty').classList.add('hidden');
         document.getElementById('fc-container').classList.remove('hidden');
         fcIdx=0; showCard();
     }
-}
+};
 
-function closeStudyArea() {
+window.closeStudyArea = () => {
     document.getElementById('fc-study-area').classList.add('hidden');
     document.getElementById('fc-study-area').classList.remove('flex');
     renderFlashcardDecks();
-}
+};
 
 function calcNextReview(card, rating) {
     let srs = card.srs || { interval: 0, easeFactor: 2.5, dueDate: Date.now() };
@@ -1257,11 +1381,11 @@ function showCard() {
     lockSRSButtons();
 }
 
-function flipFlashcard() {
+window.flipFlashcard = () => {
     fcIsFlipped = !fcIsFlipped;
     document.getElementById('fc-card-inner').classList.toggle('is-flipped', fcIsFlipped);
     if(fcIsFlipped) unlockSRSButtons(); else lockSRSButtons();
-}
+};
 
 function lockSRSButtons() {
     const box = document.getElementById('fc-actions');
@@ -1275,7 +1399,7 @@ function unlockSRSButtons() {
     }, 300);
 }
 
-async function sm2Answer(rating) {
+window.sm2Answer = async (rating) => {
     if(!activeFlashcards.length) return;
     const q = activeFlashcards[fcIdx];
     const result = calcNextReview(q, rating);
@@ -1300,7 +1424,7 @@ async function sm2Answer(rating) {
     }
     
     if(activeFlashcards.length > 0) showCard(); else startStudyDeck(currentDeck);
-}
+};
 
 // ========================
 // LEADERBOARD & PROFILE
@@ -1354,13 +1478,13 @@ function setupProfileView() {
     });
 }
 
-async function saveProfile() {
+window.saveProfile = async () => {
     window.userData.name = document.getElementById('prof-name').value.trim() || 'Khách';
     window.userData.classInfo = document.getElementById('prof-class').value.trim() || 'YK24A - TNU';
     await window.syncDataToCloud();
     updateGlobalUI();
     showToast('✅ Lưu thông tin cá nhân thành công!');
-}
+};
 </script>
 </body>
 </html>
