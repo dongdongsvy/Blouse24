@@ -305,9 +305,19 @@ window.deleteDeck = async (deckId) => {
         // await deleteDoc(doc(window.db, "decks", deckId)); 
 
         // TRƯỜNG HỢP 2: Nếu danh sách thư mục/thẻ nằm trong mảng của window.userData hoặc localStorage
+        let dataChanged = false;
         if (window.userData && window.userData.decks) {
+            const oldDecksLength = window.userData.decks.length;
             window.userData.decks = window.userData.decks.filter(d => d.id !== deckId && d.name !== deckId);
-            await window.syncDataToCloud(); // Đồng bộ lại lên Firebase câu cấu trúc user
+            if (window.userData.decks.length !== oldDecksLength) dataChanged = true;
+        }
+        if (window.userData && window.userData.blindSpots) {
+            const oldBlindSpotsLength = window.userData.blindSpots.length;
+            window.userData.blindSpots = window.userData.blindSpots.filter(c => (c.topic || 'Chưa phân loại') !== deckId);
+            if (window.userData.blindSpots.length !== oldBlindSpotsLength) dataChanged = true;
+        }
+        if (dataChanged && typeof window.syncDataToCloud === 'function') {
+            await window.syncDataToCloud(); // Đồng bộ lại lên Firebase hoặc localStorage
         }
         
         // Hoặc nếu bạn dùng một mảng toàn cục như window.allDecks hoặc tương tự:
@@ -695,7 +705,7 @@ window.deleteCurrentFlashcard = async (cardId) => {
                                 <div class="fc-face fc-front">
                                     <div id="fc-topic" class="absolute top-6 left-8 text-[10px] font-black text-primaryBlue uppercase tracking-[2px] bg-primaryBlue/10 px-3 py-1 rounded-lg border border-primaryBlue/20">MẶT TRƯỚC</div>
                                     <div id="fc-image-front" class="hidden flex justify-center mb-4 mt-8">
-                                        <img id="fc-img-front-el" src="" class="max-w-full max-h-48 rounded-xl border border-gray-700 object-contain mx-auto shadow-lg cursor-zoom-in hover:opacity-90 transition-opacity" onclick="openImgLightbox(this.src)" title="Bấm để phóng to">
+                                        <img id="fc-img-front-el" src="" class="max-w-full max-h-72 rounded-xl border border-gray-700 object-contain mx-auto shadow-lg cursor-zoom-in hover:opacity-90 transition-opacity" onclick="openImgLightbox(this.src)" title="Bấm để phóng to">
                                     </div>
                                     <h3 class="font-serif text-xl md:text-2xl text-gray-200 leading-relaxed text-center italic px-4 mt-4" id="fc-q">Câu hỏi...</h3>
                                     <div class="mt-auto pt-6 w-full text-center text-textMuted text-xs font-bold uppercase tracking-widest animate-pulse flex items-center justify-center gap-2"><span class="material-symbols-outlined text-[16px]">touch_app</span> Chạm để lật thẻ</div>
@@ -704,7 +714,7 @@ window.deleteCurrentFlashcard = async (cardId) => {
                                     <div class="absolute top-6 left-8 text-[10px] font-black text-successGreen uppercase tracking-[2px] bg-successGreen/10 px-3 py-1 rounded-lg border border-successGreen/20">MẶT SAU</div>
                                     <div class="bg-mainBg/50 p-5 rounded-2xl border border-primaryBlue/30 mb-4 mt-8"><h4 class="text-white font-bold text-lg" id="fc-a">Đáp án...</h4></div>
                                     <div id="fc-image-back" class="hidden flex justify-center mb-4">
-                                        <img id="fc-img-back-el" src="" class="max-w-full max-h-32 rounded-xl border border-gray-700 object-contain mx-auto shadow-lg mt-4 cursor-zoom-in hover:opacity-90 transition-opacity" onclick="openImgLightbox(this.src)" title="Bấm để phóng to">
+                                        <img id="fc-img-back-el" src="" class="max-w-full max-h-72 rounded-xl border border-gray-700 object-contain mx-auto shadow-lg mt-4 cursor-zoom-in hover:opacity-90 transition-opacity" onclick="openImgLightbox(this.src)" title="Bấm để phóng to">
                                     </div>
                                     <div class="flex items-start gap-3 mt-auto pt-4"><span class="material-symbols-outlined text-primaryBlue mt-1">lightbulb</span><p class="text-gray-300 text-sm leading-relaxed font-medium text-left" id="fc-exp">Giải thích...</p></div>
                                 </div>
@@ -1850,3 +1860,4 @@ window.sm2Answer = async (rating) => {
 };
 
 </script>
+
