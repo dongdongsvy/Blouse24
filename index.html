@@ -1099,10 +1099,22 @@ function parseXLSXRaw(buf) {
 }
 
 function normalizeQuizRow(r) {
-    const type = String(r.type || 'mc').trim().toLowerCase() === 'fill' ? 'fill' : 'mc';
-    const imageq = String(r.imageq || r.image || '').trim();
-    const imagea = String(r.imagea || '').trim();
-    return { ...r, type, imageq, imagea, image: r.image || imageq || '' };
+    const normalized = { ...r };
+    Object.keys(r || {}).forEach(k => {
+        normalized[String(k).trim().toLowerCase()] = r[k];
+    });
+    normalized.a = normalized.a || normalized.A || '';
+    normalized.b = normalized.b || normalized.B || '';
+    normalized.c = normalized.c || normalized.C || '';
+    normalized.d = normalized.d || normalized.D || '';
+    normalized.question = normalized.question || normalized.cauhoi || normalized['câu hỏi'] || '';
+    normalized.answer = normalized.answer || normalized.dapan || normalized['đáp án'] || '';
+    const explicitType = String(normalized.type || '').trim().toLowerCase();
+    const hasChoices = !!(normalized.a || normalized.b || normalized.c || normalized.d);
+    const type = explicitType === 'fill' || (!explicitType && !hasChoices && normalized.answer) ? 'fill' : 'mc';
+    const imageq = String(normalized.imageq || normalized.image || '').trim();
+    const imagea = String(normalized.imagea || '').trim();
+    return { ...normalized, type, imageq, imagea, image: normalized.image || imageq || '' };
 }
 
 function normalizeAnswer(v) {
@@ -2157,6 +2169,7 @@ window.sm2Answer = async (rating) => {
 };
 
 </script>
+
 
 
 
