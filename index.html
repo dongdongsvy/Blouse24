@@ -1238,6 +1238,22 @@ function normalizeKeyName(v) {
         .replace(/[^a-z0-9]/g, '');
 }
 
+function normalizeDisplayText(v, fallback = 'Chung') {
+    const raw = String(v || '').trim().replace(/\s+/g, ' ');
+    if(!raw) return fallback;
+    const lower = raw.toLocaleLowerCase('vi-VN');
+    return lower.charAt(0).toLocaleUpperCase('vi-VN') + lower.slice(1);
+}
+
+function normalizeSubjectName(v) {
+    return normalizeDisplayText(v, 'Chung');
+}
+
+function normalizeTopicName(v) {
+    const raw = String(v || '').trim().replace(/\s+/g, ' ');
+    return raw || '\u0043h\u01b0a ph\u00e2n lo\u1ea1i';
+}
+
 function pickField(obj, aliases, fallback = '') {
     const direct = aliases.find(a => obj[a] !== undefined && obj[a] !== null && String(obj[a]).trim() !== '');
     if(direct) return String(obj[direct]).trim();
@@ -1259,8 +1275,8 @@ function normalizeQuizRow(r) {
     normalized.d = normalized.d || normalized.D || '';
     normalized.question = pickField(normalized, ['question', 'cauhoi', 'cau hoi', 'cÃ¢u há»i'], '');
     normalized.answer = pickField(normalized, ['answer', 'dapan', 'dap an', 'Ä‘Ã¡p Ã¡n'], '');
-    normalized.subject = pickField(normalized, ['subject', 'monhoc', 'mon hoc', 'mÃ´n há»c', 'môn học', 'course', 'domain'], 'Chung');
-    normalized.topic = pickField(normalized, ['topic', 'chude', 'chu de', 'chÃ¡»§ Ä‘á»', 'chủ đề', 'tab', 'lesson', 'unit'], 'Chung');
+    normalized.subject = normalizeSubjectName(pickField(normalized, ['subject', 'monhoc', 'mon hoc', 'môn học', 'course', 'domain'], 'Chung'));
+    normalized.topic = normalizeTopicName(pickField(normalized, ['topic', 'chude', 'chu de', 'chủ đề', 'lesson', 'unit'], ''));
     const explicitType = String(normalized.type || '').trim().toLowerCase();
     const hasChoices = !!(normalized.a || normalized.b || normalized.c || normalized.d);
     const type = explicitType === 'fill' || (!explicitType && !hasChoices && normalized.answer) ? 'fill' : 'mc';
@@ -1288,22 +1304,36 @@ function answerImageHTML(q, maxClass = 'max-h-48') {
 }
 
 function refreshQuizSetupUI() {
-    const subjects = [...new Set(allQ.map(q=>q.subject||'Chung').filter(Boolean))];
-    if(!subjects.includes(selSubject)) selSubject = subjects[0] || "";
+    const subjects = [...new Set(allQ.map(q=>q.subject||'Chung').filter(Boolean))]
+        .sort((a,b)=>a.localeCompare(b, 'vi'));
+    if(!subjects.includes(selSubject)) {
+        selSubject = subjects
+            .map(s => ({ name: s, count: allQ.filter(q => (q.subject || 'Chung') === s).length }))
+            .sort((a,b) => b.count - a.count || a.name.localeCompare(b.name, 'vi'))[0]?.name || "";
+    }
     selTopics.clear();
-    renderSubjectFilter(subjects); updateTopicFilter(); updateCount(); updateProgressPanel();
+    renderSubjectFilter(subjects);
+    updateTopicFilter();
+    updateCount();
+    updateProgressPanel();
 }
 
 function loadQ(rows) {
-    allQ = rows.map(normalizeQuizRow).filter(r=>
-        (r.question || r.imageq || r.image) &&
-        r.answer &&
-        (r.type === 'fill' || (r.a && r.b))
-    );
-    allQ.forEach((q,i)=>q._id=q._id||`q_${Date.now()}_${i}`);
+    const normalizedRows = rows.map(normalizeQuizRow);
+    const skipped = { noQuestion: 0, noAnswer: 0, noChoices: 0 };
+    allQ = normalizedRows.filter(r => {
+        const hasQuestion = !!(r.question || r.imageq || r.image);
+        const hasAnswer = !!r.answer;
+        const hasChoices = r.type === 'fill' || !!(r.a || r.b || r.c || r.d);
+        if(!hasQuestion) skipped.noQuestion++;
+        if(!hasAnswer) skipped.noAnswer++;
+        if(!hasChoices) skipped.noChoices++;
+        return hasQuestion && hasAnswer && hasChoices;
+    });
+    allQ.forEach((q,i)=>q._id=q._id||`q_${normalizeKeyName(q.subject)}_${normalizeKeyName(q.topic)}_${i}`);
+    console.info('[Quiz DB]', { raw: rows.length, loaded: allQ.length, skipped });
     if(allQ.length === 0) return;
     refreshQuizSetupUI();
-    // Không tự chuyển sang setup khi đồng bộ nên để tránh nhảy vào phần quiz.
     const currentView = document.querySelector('.view-section.active');
     if(currentView && currentView.id === 'view-setup') switchView('setup');
 }
@@ -1421,34 +1451,55 @@ async function saveCustomFc() {
 // ========================
 // SETUP QUIZ (BỎ ĐỘ KHÓ)
 // ========================
+function getSubjectQuestions(subject = selSubject) {
+    return allQ.filter(q => (q.subject || 'Chung') === subject);
+}
+
 function renderSubjectFilter(arr) {
     const div = document.getElementById('subj-filters'); div.innerHTML='';
     arr.forEach(val=>{
+        const count = getSubjectQuestions(val).length;
         const c = document.createElement('button');
-        c.className=`filter-chip ${selSubject===val?'active':''}`; c.textContent=val;
+        c.className=`filter-chip ${selSubject===val?'active':''}`;
+        c.innerHTML=`<span>${val}</span><span class="ml-2 text-xs opacity-70">(${count})</span>`;
         c.onclick=()=>{ selSubject=val; selTopics.clear(); renderSubjectFilter(arr); updateTopicFilter(); updateCount(); };
         div.appendChild(c);
     });
 }
+
 function updateTopicFilter() {
-    const curTop = [...new Set(allQ.filter(q=>(q.subject||'Chung')===selSubject).map(q=>q.topic||q.tab||'Chung').filter(Boolean))];
+    const rows = getSubjectQuestions();
+    const topicCounts = new Map();
+    rows.forEach(q => {
+        const topic = q.topic || '\u0043h\u01b0a ph\u00e2n lo\u1ea1i';
+        topicCounts.set(topic, (topicCounts.get(topic) || 0) + 1);
+    });
     const div = document.getElementById('top-filters'); div.innerHTML='';
-    curTop.forEach(val=>{
+    const allBtn = document.createElement('button');
+    allBtn.className=`filter-chip ${selTopics.size===0?'active':''}`;
+    allBtn.innerHTML=`<span>T\u1ea5t c\u1ea3 ch\u1ee7 \u0111\u1ec1</span><span class="ml-2 text-xs opacity-70">(${rows.length})</span>`;
+    allBtn.onclick=()=>{ selTopics.clear(); updateTopicFilter(); updateCount(); };
+    div.appendChild(allBtn);
+    [...topicCounts.entries()].sort((a,b)=>a[0].localeCompare(b[0], 'vi')).forEach(([val,count])=>{
         const c = document.createElement('button');
-        c.className=`filter-chip ${selTopics.has(val)?'active':''}`; c.textContent=val;
-        c.onclick=()=>{ selTopics.has(val)?selTopics.delete(val):selTopics.add(val); c.className=`filter-chip ${selTopics.has(val)?'active':''}`; updateCount(); };
+        c.className=`filter-chip ${selTopics.has(val)?'active':''}`;
+        c.innerHTML=`<span>${val}</span><span class="ml-2 text-xs opacity-70">(${count})</span>`;
+        c.onclick=()=>{ selTopics.has(val)?selTopics.delete(val):selTopics.add(val); updateTopicFilter(); updateCount(); };
         div.appendChild(c);
     });
 }
+
 function getFiltered() {
     return allQ.filter(q=>
         ((q.subject||'Chung')===selSubject) &&
-        (!selTopics.size||selTopics.has(q.topic||q.tab||'Chung'))
+        (!selTopics.size||selTopics.has(q.topic||'\u0043h\u01b0a ph\u00e2n lo\u1ea1i'))
     );
 }
+
 function updateCount() {
     const f = getFiltered();
-    document.getElementById('max-count').textContent=`/ ${f.length}`;
+    const subjectTotal = getSubjectQuestions().length;
+    document.getElementById('max-count').textContent=`/ ${f.length} c\u00e2u${selTopics.size ? ' \u0111\u00e3 ch\u1ecdn' : ''} - ${subjectTotal}/${allQ.length} c\u00e2u m\u00f4n n\u00e0y/t\u1ed5ng`;
     updateProgressPanel();
 }
 
