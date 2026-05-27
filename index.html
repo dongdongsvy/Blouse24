@@ -29,7 +29,8 @@
     </script>
 
     <style>
-        html, body { width: 100vw; height: 100vh; margin: 0; padding: 0; overflow: hidden; background-color: #121319; color: #fff; font-family: '"Be Vietnam Pro"', sans-serif;}
+        html, body { width: 100vw; height: 100vh; margin: 0; padding: 0; overflow: hidden; background-color: #121319; color: #fff; font-family: 'Times New Roman', Times, serif;}
+        *:not(.material-symbols-outlined) { font-family: 'Times New Roman', Times, serif !important; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
         .icon-filled { font-variation-settings: 'FILL' 1; }
         ::-webkit-scrollbar { width: 6px; }
@@ -576,7 +577,7 @@ window.deleteCurrentFlashcard = async (cardId) => {
                 <section class="bg-cardBg rounded-[32px] p-8 md:p-10 flex justify-between items-center mb-8 border border-gray-700/30 shadow-lg">
                     <div class="max-w-xl">
                         <div class="bg-primaryBlue text-white text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-wider inline-block mb-4">CHÀO MỪNG TRỞ LẠI, BÁC SĨ</div>
-                        <h3 class="text-3xl md:text-4xl font-black text-white mb-4 leading-tight">Chào mừng đồng nghiệp <br> <span class="text-accentBlue">trở lại! 🚀</span></h3>
+                        <h3 class="text-3xl md:text-4xl font-black text-white mb-4 leading-tight">Chào mừng đồng nghiệp <br> <span class="text-accentBlue">trở lại!</span></h3>
                         <p class="text-textMuted font-medium leading-relaxed">Học là 9, nhậu là 10. Chúc các bác sĩ tương lai cày êm, thi mượt, qua môn trót lọt với hệ thống ôn luyện đặc quyền.</p>
                     </div>
                     <div class="w-52 h-36 rounded-[24px] overflow-hidden shadow-2xl border-4 border-gray-800 shrink-0 hidden lg:flex items-center justify-center bg-mainBg cursor-pointer" onclick="openPhotoLightbox()" title="Bấm để phóng to">
@@ -592,12 +593,11 @@ window.deleteCurrentFlashcard = async (cardId) => {
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
                             <div class="absolute bottom-0 left-0 right-0 px-8 py-5 flex justify-between items-end">
                                 <div>
-                                    <p class="text-white font-black text-xl mb-1">📸 Ảnh lớp YK24A — Blouse24</p>
-                                    <p class="text-gray-300 text-sm font-medium">Cùng nhau ôn thi, cùng nhau tốt nghiệp! 🎓</p>
+                                    <p class="text-white font-black text-xl mb-1">Ảnh lớp YK24A - Blouse24</p>
+                                    <p class="text-gray-300 text-sm font-medium">Cùng nhau ôn thi, cùng nhau tốt nghiệp!</p>
                                 </div>
                                 <div class="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl px-4 py-2 flex items-center gap-2 text-white text-sm font-bold">
-                                    <span class="material-symbols-outlined text-[16px]">zoom_in</span> Phóng to
-                                </div>
+                                    <span class="material-symbols-outlined text-[16px]">zoom_in</span> Phóng to</div>
                             </div>
                         </div>
                     </div>
@@ -626,7 +626,7 @@ window.deleteCurrentFlashcard = async (cardId) => {
                         <div onclick="fetchDatabaseDual(true)" class="bg-mainBg/50 rounded-2xl p-10 border-2 border-dashed border-gray-700 flex flex-col items-center justify-center hover:bg-gray-800/50 transition-all cursor-pointer group shadow-inner flex-1">
                             <div class="w-14 h-14 rounded-full border border-gray-600 flex items-center justify-center mb-4 group-hover:border-primaryBlue transition-colors bg-gray-800"><span class="material-symbols-outlined text-textMuted group-hover:text-primaryBlue text-3xl">cloud_sync</span></div>
                             <span class="font-bold text-white text-lg mb-2 text-center">Đồng Bộ Toàn Hệ Thống</span>
-                            <span class="text-sm text-textMuted text-center">Tải Trắc nghiệm & Flashcard (Cả do user khác tạo)</span>
+                            <span class="text-sm text-textMuted text-center">Tải Trắc nghiệm & Flashcard (cả do user khác tạo)</span>
                         </div>
                     </div>
 
@@ -653,24 +653,24 @@ window.deleteCurrentFlashcard = async (cardId) => {
                     </div>
 
                     <div class="space-y-8 flex-1 overflow-y-auto pr-4 z-10" id="filter-area">
-                        <div><div class="text-[11px] font-black text-primaryBlue uppercase tracking-[2px] mb-4">1. CHá»ŒN MÃ”N Há»ŒC</div><div class="flex flex-wrap gap-3" id="subj-filters"></div></div>
-                        <div><div class="text-[11px] font-black text-textMuted uppercase tracking-[2px] mb-4">2. CHá»ŒN CHá»¦ Äá»€</div><div class="flex flex-wrap gap-3" id="top-filters"></div></div>
+                        <div><div class="text-[11px] font-black text-primaryBlue uppercase tracking-[2px] mb-4">CHỌN MÔN HỌC</div><div class="flex flex-wrap gap-3" id="subj-filters"></div></div>
+                        <div><div class="text-[11px] font-black text-textMuted uppercase tracking-[2px] mb-4">CHỌN CHỦ ĐỀ</div><div class="flex flex-wrap gap-3" id="top-filters"></div></div>
                         <div id="progress-summary" class="bg-mainBg/70 border border-gray-700 rounded-3xl p-5">
                             <div class="flex items-center justify-between gap-4 mb-4">
                                 <div>
-                                    <div class="text-[11px] font-black text-accentBlue uppercase tracking-[2px]">Tiáº¿n Ä‘á»™ Firebase</div>
-                                    <div class="text-textMuted text-xs mt-1">Theo dÃµi cáº£ cÃ¢u Ä‘Ã£ lÃ m, chÆ°a lÃ m, Ä‘Ãºng vÃ  sai trong bá»™ lá»c hiá»‡n táº¡i.</div>
+                                    <div class="text-[11px] font-black text-accentBlue uppercase tracking-[2px]">Tiến độ Firebase</div>
+                                    <div class="text-textMuted text-xs mt-1">Theo dõi câu đã làm, chưa làm, đúng và sai trong bộ lọc hiện tại.</div>
                                 </div>
                                 <div class="flex gap-2 shrink-0">
-                                    <button id="btn-resume-progress" onclick="startQuiz('resume')" class="px-4 py-2 rounded-xl bg-primaryBlue text-white text-xs font-black disabled:opacity-40 disabled:cursor-not-allowed">Há»c tiáº¿p</button>
-                                    <button id="btn-retry-answered" onclick="startQuiz('retryAnswered')" class="px-4 py-2 rounded-xl border border-gray-600 text-white text-xs font-black disabled:opacity-40 disabled:cursor-not-allowed">LÃ m láº¡i Ä‘Ã£ tráº£ lá»i</button>
+                                    <button id="btn-resume-progress" onclick="startQuiz('resume')" class="px-4 py-2 rounded-xl bg-primaryBlue text-white text-xs font-black disabled:opacity-40 disabled:cursor-not-allowed">Học tiếp</button>
+                                    <button id="btn-retry-answered" onclick="startQuiz('retryAnswered')" class="px-4 py-2 rounded-xl border border-gray-600 text-white text-xs font-black disabled:opacity-40 disabled:cursor-not-allowed">Làm lại đã trả lời</button>
                                 </div>
                             </div>
                             <div class="h-2 bg-gray-800 rounded-full overflow-hidden mb-4"><div id="progress-bar" class="h-full bg-accentBlue rounded-full transition-all" style="width:0%"></div></div>
                             <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
-                                <div class="bg-cardBg rounded-2xl p-3 border border-gray-700"><div id="progress-answered" class="text-white font-black text-xl">0</div><div class="text-[10px] uppercase text-textMuted font-bold">ÄÃ£ tráº£ lá»i</div></div>
-                                <div class="bg-cardBg rounded-2xl p-3 border border-gray-700"><div id="progress-unanswered" class="text-white font-black text-xl">0</div><div class="text-[10px] uppercase text-textMuted font-bold">ChÆ°a lÃ m</div></div>
-                                <div class="bg-cardBg rounded-2xl p-3 border border-gray-700"><div id="progress-correct" class="text-successCyan font-black text-xl">0</div><div class="text-[10px] uppercase text-textMuted font-bold">ÄÃºng</div></div>
+                                <div class="bg-cardBg rounded-2xl p-3 border border-gray-700"><div id="progress-answered" class="text-white font-black text-xl">0</div><div class="text-[10px] uppercase text-textMuted font-bold">Đã trả lời</div></div>
+                                <div class="bg-cardBg rounded-2xl p-3 border border-gray-700"><div id="progress-unanswered" class="text-white font-black text-xl">0</div><div class="text-[10px] uppercase text-textMuted font-bold">Chưa làm</div></div>
+                                <div class="bg-cardBg rounded-2xl p-3 border border-gray-700"><div id="progress-correct" class="text-successCyan font-black text-xl">0</div><div class="text-[10px] uppercase text-textMuted font-bold">Đúng</div></div>
                                 <div class="bg-cardBg rounded-2xl p-3 border border-gray-700"><div id="progress-incorrect" class="text-errorRed font-black text-xl">0</div><div class="text-[10px] uppercase text-textMuted font-bold">Sai</div></div>
                             </div>
                         </div>
@@ -710,9 +710,9 @@ window.deleteCurrentFlashcard = async (cardId) => {
                     </div>
                     <div class="mt-auto flex flex-col gap-3 pt-2">
                         <span id="q-meta" class="bg-blue-900/30 text-primaryBlue px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider border border-blue-900/50 text-center">CHỦ ĐỀ</span>
-                        <button onclick="quizSkip()" id="btn-skip" class="hidden items-center justify-center gap-2 px-6 py-3 rounded-xl border border-gray-700 text-textMuted font-bold hover:bg-gray-800 hover:text-white transition-all text-sm">Bỏ qua ⏭</button>
+                        <button onclick="quizSkip()" id="btn-skip" class="hidden items-center justify-center gap-2 px-6 py-3 rounded-xl border border-gray-700 text-textMuted font-bold hover:bg-gray-800 hover:text-white transition-all text-sm">Bỏ qua</button>
                         <button id="btn-exam-submit" onclick="submitQuiz()" class="hidden bg-primaryBlue text-white font-black px-6 py-3 rounded-xl text-sm hover:brightness-110 shadow-[0_10px_20px_rgba(59,130,246,0.3)] transition-all text-center">NỘP BÀI</button>
-                        <button onclick="if(confirm('Hủy bài thi và về trang chủ?')) switchView('dashboard');" class="text-textMuted hover:text-errorRed font-bold text-xs uppercase tracking-widest bg-gray-800/50 px-4 py-2.5 rounded-lg transition-colors text-center">Thoát</button>
+                        <button onclick="if(confirm('Hủy bài thi và thoát?')) switchView('dashboard');" class="text-textMuted hover:text-errorRed font-bold text-xs uppercase tracking-widest bg-gray-800/50 px-4 py-2.5 rounded-lg transition-colors text-center">Thoát</button>
                     </div>
                 </aside>
 
@@ -1142,8 +1142,8 @@ function updateGlobalUI() {
     setText('side-ava', d.avatar || 'ðŸ‘¨â€âš•ï¸');
     setText('side-name', d.name || 'KhÃ¡ch');
     setText('side-class', d.classInfo || 'YK24A - TNU');
-    setText('dash-streak', (d.streak || 0) + ' NgÃ y');
-    setText('dash-done', (d.totalDone || 0) + ' CÃ¢u');
+    setText('dash-streak', (d.streak || 0) + ' Ngày');
+    setText('dash-done', (d.totalDone || 0) + ' Câu');
     setText('dash-rate', d.totalDone ? Math.round((d.totalCorrect || 0)/d.totalDone*100) + '%' : '0%');
     updateProgressPanel();
 }
@@ -1463,12 +1463,12 @@ function setQuizMode(m) {
 
 function startQuiz(source = 'new') {
     const f=getFiltered();
-    if(!f.length) return showToast('âŒ KhÃ´ng cÃ³ cÃ¢u há»i nÃ o phÃ¹ há»£p vá»›i bá»™ lá»c!');
+    if(!f.length) return showToast('Không có câu hỏi nào phù hợp với bộ lọc!');
     const n = Math.min(parseInt(document.getElementById('count-input').value)||f.length, f.length);
     let pool = [...f];
     if(source === 'resume') pool = pool.filter(q => !getQuestionProgress(q)?.answered);
     if(source === 'retryAnswered') pool = pool.filter(q => getQuestionProgress(q)?.answered);
-    if(!pool.length) return showToast(source === 'resume' ? 'âœ… Báº¡n Ä‘Ã£ hoÃ n thÃ nh táº¥t cáº£ cÃ¢u trong bá»™ lá»c nÃ y!' : 'âš ï¸ ChÆ°a cÃ³ cÃ¢u nÃ o Ä‘Ã£ lÃ m Ä‘á»ƒ luyá»‡n láº¡i.');
+    if(!pool.length) return showToast(source === 'resume' ? 'Bạn đã hoàn thành tất cả câu trong bộ lọc này!' : 'Chưa có câu nào đã làm để luyện lại.');
     activeQ = pool.sort(()=>Math.random()-0.5).slice(0, source === 'new' ? n : pool.length);
     currentIdx=0; userAnswers={}; skippedQ.clear(); wrongQ=[]; startTime=Date.now(); lastQuizSource=source;
     markLastQuiz(source, activeQ.length);
