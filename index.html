@@ -111,11 +111,16 @@
     <div class="bg-cardBg p-12 rounded-[32px] max-w-md w-full text-center border border-gray-700 shadow-2xl">
         <div class="w-20 h-20 bg-accentBlue text-blue-900 rounded-3xl flex items-center justify-center text-4xl mx-auto mb-8 shadow-lg"><span class="material-symbols-outlined icon-filled">medical_services</span></div>
         <h2 class="text-3xl font-black text-white mb-2">Blouse24</h2>
-        <p class="text-textMuted mb-10 font-medium">Hệ thống Ôn luyện Y Khoa YK24A. Yêu cầu đăng nhập để đồng bộ tiến độ.</p>
+        <p class="text-textMuted mb-8 font-medium">Dang nhap Google de dong bo Firebase hoac tiep tuc o che do khach.</p>
         <button onclick="window.firebaseLogin()" class="w-full flex items-center justify-center gap-3 bg-white text-gray-900 font-bold py-4 rounded-2xl hover:bg-gray-100 transition-all shadow-xl">
             <svg width="24" height="24" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"></path><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"></path><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"></path><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"></path></svg>
             <span id="btn-login-text">Đăng nhập Google</span>
         </button>
+        <button onclick="window.guestLogin()" class="mt-4 w-full flex items-center justify-center gap-3 bg-mainBg text-white font-bold py-4 rounded-2xl hover:bg-gray-800 transition-all border border-gray-700">
+            <span class="material-symbols-outlined">person</span>
+            <span>Tiep tuc voi tu cach khach</span>
+        </button>
+        <p class="text-[11px] text-textMuted mt-4 leading-relaxed">Che do khach khong ghi tien do len Firebase. Du lieu chi luu tam thoi tren thiet bi nay.</p>
     </div>
 </div>
 
@@ -253,7 +258,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, orderBy, query, limit, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import { getFirestore, doc, setDoc, getDoc, collection, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -266,46 +271,85 @@
   window.auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  window.firebaseLogin = async () => { 
-      document.getElementById('btn-login-text').textContent = "Đang kết nối...";
-      await signInWithPopup(window.auth, provider).catch(e => { alert('Đăng nhập thất bại: ' + e.message); document.getElementById('btn-login-text').textContent = "Đăng nhập Google"; }); 
-  };
-  window.firebaseLogout = () => { if(confirm("Bạn có chắc muốn đang xuất không?")) signOut(window.auth).then(() => location.reload()); };
+  function createGuestUserData(saved = {}) {
+      return {
+          uid: 'guest_local',
+          name: saved.name || 'Guest',
+          avatar: saved.avatar || 'G',
+          classInfo: saved.classInfo || 'Guest mode',
+          totalDone: saved.totalDone || 0,
+          totalCorrect: saved.totalCorrect || 0,
+          streak: saved.streak || 0,
+          lastDate: saved.lastDate || "",
+          badges: saved.badges || ['rookie'],
+          blindSpots: saved.blindSpots || [],
+          history: saved.history || [],
+          progress: normalizeProgressData(saved.progress)
+      };
+  }
 
-  onAuthStateChanged(window.auth, async (user) => {
-    if (user) {
-      window.currentUser = user; document.getElementById('login-modal').classList.remove('active');
-      const snap = await getDoc(doc(window.db, "users", user.uid));
-      if (snap.exists()) {
-        const d = snap.data();
-        window.userData = { ...d, uid: user.uid, blindSpots: d.blindSpots || [], badges: d.badges || ['rookie'], history: d.history || [], classInfo: d.classInfo || 'YK24A - TNU' };
-      } else {
-        window.userData = { uid: user.uid, name: user.displayName, avatar: '👨‍⚕️', classInfo: 'YK24A - TNU', totalDone: 0, totalCorrect: 0, streak: 0, lastDate: "", badges: ['rookie'], blindSpots: [], history: [] };
-        await setDoc(doc(window.db, "users", user.uid), window.userData);
-      }
+  function bootAppAfterLogin() {
+      document.getElementById('login-modal').classList.remove('active');
       updateGlobalUI(); switchView('dashboard'); fetchDatabaseDual(false);
-      // Set class photo in banner
       setTimeout(() => {
         const bannerEl = document.getElementById('class-photo-banner');
         if(bannerEl && typeof CLASS_PHOTO_SRC !== 'undefined') bannerEl.src = CLASS_PHOTO_SRC;
       }, 500);
-    } else { document.getElementById('login-modal').classList.add('active'); }
+  }
+
+  window.guestLogin = () => {
+      localStorage.setItem('blouse24_guest_mode', 'true');
+      const saved = JSON.parse(localStorage.getItem('blouse24_guest_user') || '{}');
+      window.isGuest = true;
+      window.currentUser = { uid: 'guest_local', displayName: 'Guest', isGuest: true };
+      window.userData = createGuestUserData(saved);
+      bootAppAfterLogin();
+      showToast('Guest mode active. Firebase sync is off.');
+  };
+
+  window.firebaseLogin = async () => { 
+      localStorage.removeItem('blouse24_guest_mode');
+      window.isGuest = false;
+      document.getElementById('btn-login-text').textContent = "Äang káº¿t ná»‘i...";
+      await signInWithPopup(window.auth, provider).catch(e => { alert('ÄÄƒng nháº­p tháº¥t báº¡i: ' + e.message); document.getElementById('btn-login-text').textContent = "ÄÄƒng nháº­p Google"; }); 
+  };
+  window.firebaseLogout = () => {
+      if(!confirm("Báº¡n cÃ³ cháº¯c muá»‘n Ä‘ang xuáº¥t khÃ´ng?")) return;
+      if(window.isGuest) {
+          localStorage.removeItem('blouse24_guest_mode');
+          location.reload();
+          return;
+      }
+      signOut(window.auth).then(() => location.reload());
+  };
+
+  onAuthStateChanged(window.auth, async (user) => {
+    if (user) {
+      if(window.isGuest) return;
+      window.currentUser = user;
+      const snap = await getDoc(doc(window.db, "users", user.uid));
+      if (snap.exists()) {
+        const d = snap.data();
+        window.userData = { ...d, uid: user.uid, blindSpots: d.blindSpots || [], badges: d.badges || ['rookie'], history: d.history || [], progress: normalizeProgressData(d.progress), classInfo: d.classInfo || 'YK24A - TNU' };
+      } else {
+        window.userData = { uid: user.uid, name: user.displayName, avatar: '👨‍⚕️', classInfo: 'YK24A - TNU', totalDone: 0, totalCorrect: 0, streak: 0, lastDate: "", badges: ['rookie'], blindSpots: [], history: [], progress: normalizeProgressData(null) };
+        await setDoc(doc(window.db, "users", user.uid), window.userData);
+      }
+      bootAppAfterLogin();
+    } else {
+      if(localStorage.getItem('blouse24_guest_mode') === 'true') window.guestLogin();
+      else document.getElementById('login-modal').classList.add('active');
+    }
   });
 
-  window.syncDataToCloud = async () => { if(window.currentUser) await setDoc(doc(window.db, "users", window.currentUser.uid), window.userData, { merge: true }); };
-  window.pushLeaderboard = async (score, total, deck) => {
-    if(!window.currentUser) return;
-    await setDoc(doc(window.db, "leaderboard", `${window.currentUser.uid}_${Date.now()}`), {
-      uid: window.currentUser.uid, name: window.userData.name, avatar: window.userData.avatar,
-      score, total, pct: total ? Math.round(score/total*100) : 0, deck: deck || "Tổng hợp", createdAt: new Date().toISOString()
-    });
+  window.syncDataToCloud = async () => {
+      if(!window.userData) return;
+      if(window.isGuest) {
+          localStorage.setItem('blouse24_guest_user', JSON.stringify(window.userData));
+          return;
+      }
+      if(window.currentUser) await setDoc(doc(window.db, "users", window.currentUser.uid), window.userData, { merge: true });
   };
-  window.getLeaderboardData = async () => {
-    const q = query(collection(window.db, "leaderboard"), orderBy("pct","desc"), limit(20));
-    const snap = await getDocs(q);
-    return snap.docs.map(d => d.data()).filter(d => Number.isFinite(Number(d.pct)));
-  };
-
   // ☁️ CLOUDINARY UNSIGNED UPLOAD
   const CLOUDINARY_CLOUD_NAME = "dc1duq6sv";
   const CLOUDINARY_UPLOAD_PRESET = "blouse24_app";
@@ -475,11 +519,7 @@ window.deleteCurrentFlashcard = async (cardId) => {
         <nav class="flex-1 space-y-2 px-4" id="main-nav">
             <button onclick="switchView('dashboard')" class="nav-btn active bg-cardBg text-white border-l-4 border-primaryBlue w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl hover:bg-cardBg hover:text-white transition-colors font-semibold">
                 <span class="material-symbols-outlined icon-filled">home</span> Trang chủ
-            </button>
-            <button onclick="switchView('leaderboard')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
-                <span class="material-symbols-outlined">leaderboard</span> Bảng xếp hạng
-            </button>
-            <button onclick="switchView('blindspot')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
+            </button>            <button onclick="switchView('blindspot')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
                 <span class="material-symbols-outlined">visibility_off</span> Góc Mù
             </button>
             <button onclick="switchView('flashcard')" class="nav-btn w-full flex items-center gap-4 px-6 py-3.5 rounded-2xl text-textMuted hover:bg-cardBg hover:text-white transition-colors font-semibold">
@@ -613,8 +653,27 @@ window.deleteCurrentFlashcard = async (cardId) => {
                     </div>
 
                     <div class="space-y-8 flex-1 overflow-y-auto pr-4 z-10" id="filter-area">
-                        <div><div class="text-[11px] font-black text-primaryBlue uppercase tracking-[2px] mb-4">1. CHỌN MÔN HỌC</div><div class="flex flex-wrap gap-3" id="subj-filters"></div></div>
-                        <div><div class="text-[11px] font-black text-textMuted uppercase tracking-[2px] mb-4">2. CHỌN CHỦ ĐỀ</div><div class="flex flex-wrap gap-3" id="top-filters"></div></div>
+                        <div><div class="text-[11px] font-black text-primaryBlue uppercase tracking-[2px] mb-4">1. CHá»ŒN MÃ”N Há»ŒC</div><div class="flex flex-wrap gap-3" id="subj-filters"></div></div>
+                        <div><div class="text-[11px] font-black text-textMuted uppercase tracking-[2px] mb-4">2. CHá»ŒN CHá»¦ Äá»€</div><div class="flex flex-wrap gap-3" id="top-filters"></div></div>
+                        <div id="progress-summary" class="bg-mainBg/70 border border-gray-700 rounded-3xl p-5">
+                            <div class="flex items-center justify-between gap-4 mb-4">
+                                <div>
+                                    <div class="text-[11px] font-black text-accentBlue uppercase tracking-[2px]">Tiáº¿n Ä‘á»™ Firebase</div>
+                                    <div class="text-textMuted text-xs mt-1">Theo dÃµi cáº£ cÃ¢u Ä‘Ã£ lÃ m, chÆ°a lÃ m, Ä‘Ãºng vÃ  sai trong bá»™ lá»c hiá»‡n táº¡i.</div>
+                                </div>
+                                <div class="flex gap-2 shrink-0">
+                                    <button id="btn-resume-progress" onclick="startQuiz('resume')" class="px-4 py-2 rounded-xl bg-primaryBlue text-white text-xs font-black disabled:opacity-40 disabled:cursor-not-allowed">Há»c tiáº¿p</button>
+                                    <button id="btn-retry-answered" onclick="startQuiz('retryAnswered')" class="px-4 py-2 rounded-xl border border-gray-600 text-white text-xs font-black disabled:opacity-40 disabled:cursor-not-allowed">LÃ m láº¡i Ä‘Ã£ tráº£ lá»i</button>
+                                </div>
+                            </div>
+                            <div class="h-2 bg-gray-800 rounded-full overflow-hidden mb-4"><div id="progress-bar" class="h-full bg-accentBlue rounded-full transition-all" style="width:0%"></div></div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
+                                <div class="bg-cardBg rounded-2xl p-3 border border-gray-700"><div id="progress-answered" class="text-white font-black text-xl">0</div><div class="text-[10px] uppercase text-textMuted font-bold">ÄÃ£ tráº£ lá»i</div></div>
+                                <div class="bg-cardBg rounded-2xl p-3 border border-gray-700"><div id="progress-unanswered" class="text-white font-black text-xl">0</div><div class="text-[10px] uppercase text-textMuted font-bold">ChÆ°a lÃ m</div></div>
+                                <div class="bg-cardBg rounded-2xl p-3 border border-gray-700"><div id="progress-correct" class="text-successCyan font-black text-xl">0</div><div class="text-[10px] uppercase text-textMuted font-bold">ÄÃºng</div></div>
+                                <div class="bg-cardBg rounded-2xl p-3 border border-gray-700"><div id="progress-incorrect" class="text-errorRed font-black text-xl">0</div><div class="text-[10px] uppercase text-textMuted font-bold">Sai</div></div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mt-8 pt-8 border-t border-gray-800 flex flex-col sm:flex-row justify-between items-center gap-6 z-10">
@@ -826,34 +885,7 @@ window.deleteCurrentFlashcard = async (cardId) => {
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div id="view-leaderboard" class="view-section p-6 md:p-10 max-w-5xl mx-auto w-full">
-                <div class="text-center mb-14"><h2 class="text-4xl font-extrabold text-white mb-2">Bảng Vàng</h2><p class="text-textMuted text-sm">Vinh danh những bác sĩ xuất sắc nhất hệ thống</p></div>
-                <div class="flex flex-col md:flex-row justify-center items-center md:items-end gap-6 mb-16" id="lb-podium">
-                    <div class="w-64 bg-cardBg rounded-[24px] p-6 text-center border border-gray-700 shadow-lg relative order-2 md:order-1">
-                        <div class="relative w-20 h-20 mx-auto mb-4"><div class="w-full h-full rounded-full border-4 border-cardBg bg-gray-800 flex items-center justify-center text-3xl" id="lb-p2-ava">👨‍⚕️</div><span class="absolute -bottom-2 right-0 bg-gray-200 text-gray-800 text-[10px] font-extrabold px-2 py-0.5 rounded-full border-2 border-cardBg">#2</span></div>
-                        <h3 class="text-white font-bold mb-1 truncate" id="lb-p2-name">...</h3><div class="text-cyan-400 font-black text-3xl mb-1" id="lb-p2-pct">0%</div><div class="text-textMuted text-[10px] font-bold tracking-widest uppercase">Độ chính xác</div>
-                    </div>
-                    <div class="w-72 bg-cardBg rounded-[32px] p-8 text-center border border-primaryBlue/50 shadow-[0_0_30px_rgba(59,130,246,0.15)] relative z-10 md:scale-105 order-1 md:order-2">
-                        <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-200 text-blue-900 text-[10px] font-black uppercase tracking-wider px-4 py-1.5 rounded-full shadow-md whitespace-nowrap">Dẫn đầu</div>
-                        <div class="relative w-24 h-24 mx-auto mt-4 mb-4"><div class="w-full h-full rounded-full border-[4px] border-blue-400 bg-gray-800 flex items-center justify-center text-4xl" id="lb-p1-ava">👨‍⚕️</div><span class="absolute -bottom-2 right-2 bg-blue-200 text-blue-900 text-xs font-black w-6 h-6 flex items-center justify-center rounded-full border-2 border-cardBg">1</span></div>
-                        <h3 class="text-white font-extrabold text-xl mb-1 truncate" id="lb-p1-name">...</h3><div class="text-blue-100 font-black text-4xl mb-2" id="lb-p1-pct">0%</div><div class="text-primaryBlue text-[10px] font-bold tracking-widest uppercase">Độ chính xác cao nhất</div>
-                    </div>
-                    <div class="w-64 bg-cardBg rounded-[24px] p-6 text-center border border-gray-700 shadow-lg relative order-3">
-                        <div class="relative w-20 h-20 mx-auto mb-4"><div class="w-full h-full rounded-full border-4 border-cardBg bg-gray-800 flex items-center justify-center text-3xl" id="lb-p3-ava">👨‍⚕️</div><span class="absolute -bottom-2 right-0 bg-orange-200 text-orange-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full border-2 border-cardBg">#3</span></div>
-                        <h3 class="text-white font-bold mb-1 truncate" id="lb-p3-name">...</h3><div class="text-warnOrange font-black text-3xl mb-1" id="lb-p3-pct">0%</div><div class="text-textMuted text-[10px] font-bold tracking-widest uppercase">Độ chính xác</div>
-                    </div>
-                </div>
-                <div class="bg-cardBg rounded-3xl overflow-hidden border border-gray-700 max-w-4xl mx-auto mb-20 shadow-xl overflow-x-auto">
-                    <table class="w-full text-left min-w-[600px]">
-                        <thead class="text-textMuted text-[10px] uppercase tracking-widest font-bold border-b border-gray-700/50 bg-mainBg/30"><tr><th class="py-5 px-6">Hạng</th><th class="py-5 px-6">Bác sĩ</th><th class="py-5 px-6 text-center">Chủ Đề</th><th class="py-5 px-6 text-right">Độ chính xác</th></tr></thead>
-                        <tbody class="text-sm font-semibold divide-y divide-gray-700/50" id="lb-table"></tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div id="view-profile" class="view-section w-full h-full p-6 md:p-10 overflow-y-auto">
+            </div><div id="view-profile" class="view-section w-full h-full p-6 md:p-10 overflow-y-auto">
                 <div class="max-w-5xl mx-auto w-full">
                     <header class="mb-10"><h2 class="text-3xl font-black text-white mb-1">Hồ sơ cá nhân</h2><p class="text-textMuted text-sm font-medium">Quản lý định danh và theo dõi tiến trình học tập</p></header>
                     <div class="bg-cardBg rounded-[32px] p-8 md:p-10 border border-gray-700/30 shadow-xl relative overflow-hidden mb-12">
@@ -926,7 +958,7 @@ window.deleteCurrentFlashcard = async (cardId) => {
 // ========================
 // TỪ ĐIỂN & CONFIG
 // ========================
-const QUIZ_DB_URL = "https://script.google.com/macros/s/AKfycbwnCig-moJfFFx3HOk1NoWFD2fg5w0pUNuAVZMyENkzslIZ2KvV5XCPey6o_lfdbGKueA/exec";
+const QUIZ_DB_URL = "https://script.google.com/macros/s/AKfycbwnBax9Di4onGtxQXG_XkzCtQ9vrMowCR_9GbLoYlKsoe5cYi_qxWlqZwY_-yZDrc8_Rg/exec";
 const FLASHCARD_DB_URL = "https://script.google.com/macros/s/AKfycbxyHZu57PVJ4mvHkp2NZkydMI-rSD1Kdo6Cjg2ebuM22woPkeFKkuULWRDBvwojHSMb/exec";
 
 const AVATAR_LIST = ['👨‍⚕️', '👩‍⚕️', '🩺', '🧠', '❤️', '💊', '🧬', '🔬', '🚑', '🦴'];
@@ -943,7 +975,7 @@ const BADGE_LIST = {
 };
 
 let allQ=[], activeQ=[], wrongQ=[], userAnswers={}, skippedQ=new Set();
-let currentIdx=0, quizMode='practice', timerInterval=null, startTime=0;
+let currentIdx=0, quizMode='practice', timerInterval=null, startTime=0, lastQuizSource='new';
 let selSubject="", selTopics=new Set();
 let activeFlashcards = [], currentDeck = null;
 
@@ -972,6 +1004,103 @@ function closeSidebarMobile() {
     }
 }
 
+
+function normalizeProgressData(progress) {
+    const p = progress && typeof progress === 'object' ? progress : {};
+    return {
+        questions: p.questions && typeof p.questions === 'object' ? p.questions : {},
+        lastQuiz: p.lastQuiz && typeof p.lastQuiz === 'object' ? p.lastQuiz : null
+    };
+}
+
+function ensureProgress() {
+    if(!window.userData) return normalizeProgressData(null);
+    window.userData.progress = normalizeProgressData(window.userData.progress);
+    return window.userData.progress;
+}
+
+function stableQuestionKey(q) {
+    const base = String(q?._id || q?.id || q?.question || q?.imageq || q?.image || '').trim();
+    let hash = 0;
+    for(let i = 0; i < base.length; i++) hash = ((hash << 5) - hash + base.charCodeAt(i)) | 0;
+    return 'q_' + Math.abs(hash) + '_' + base.length;
+}
+
+let progressSyncTimer = null;
+function scheduleProgressSync() {
+    clearTimeout(progressSyncTimer);
+    progressSyncTimer = setTimeout(() => window.syncDataToCloud?.().catch(console.error), 800);
+}
+
+function getQuestionProgress(q) {
+    const p = ensureProgress();
+    return p.questions[stableQuestionKey(q)] || null;
+}
+
+function saveQuestionProgress(q, selected, correct, status = 'answered') {
+    if(!q || !window.userData) return;
+    const p = ensureProgress();
+    const key = stableQuestionKey(q);
+    const prev = p.questions[key] || {};
+    p.questions[key] = {
+        questionId: q._id || key,
+        subject: q.subject || 'Chung',
+        topic: q.topic || q.tab || 'Chung',
+        answered: status === 'answered',
+        correct: status === 'answered' ? !!correct : false,
+        selected: selected ?? '',
+        attempts: (prev.attempts || 0) + (status === 'answered' ? 1 : 0),
+        updatedAt: new Date().toISOString()
+    };
+    scheduleProgressSync();
+    updateProgressPanel();
+}
+
+function getProgressStats(rows = getFiltered()) {
+    const p = ensureProgress();
+    const total = rows.length;
+    let answered = 0, correct = 0, incorrect = 0;
+    rows.forEach(q => {
+        const item = p.questions[stableQuestionKey(q)];
+        if(item?.answered) {
+            answered++;
+            if(item.correct) correct++; else incorrect++;
+        }
+    });
+    return { total, answered, correct, incorrect, unanswered: Math.max(total - answered, 0) };
+}
+
+function updateProgressPanel() {
+    const box = document.getElementById('progress-summary');
+    if(!box || !allQ.length) return;
+    const s = getProgressStats();
+    document.getElementById('progress-answered').textContent = s.answered;
+    document.getElementById('progress-unanswered').textContent = s.unanswered;
+    document.getElementById('progress-correct').textContent = s.correct;
+    document.getElementById('progress-incorrect').textContent = s.incorrect;
+    document.getElementById('progress-bar').style.width = s.total ? Math.round(s.answered / s.total * 100) + '%' : '0%';
+    document.getElementById('btn-resume-progress').disabled = s.unanswered === 0;
+    document.getElementById('btn-retry-answered').disabled = s.answered === 0;
+}
+
+function markLastQuiz(source, count) {
+    const p = ensureProgress();
+    p.lastQuiz = {
+        source,
+        subject: selSubject || '',
+        topics: [...selTopics],
+        count,
+        updatedAt: new Date().toISOString()
+    };
+    scheduleProgressSync();
+}
+
+function isAnswerCorrect(q, selected) {
+    const cA = String(q.answer || '').trim();
+    if(q.type === 'fill') return normalizeAnswer(selected) === normalizeAnswer(cA);
+    return String(selected || '').toUpperCase() === cA.toUpperCase();
+}
+
 function showToast(msg) {
     const box = document.getElementById('toast-box');
     const t = document.createElement('div'); t.className = 'toast'; t.innerHTML = msg; box.appendChild(t);
@@ -995,13 +1124,12 @@ function switchView(id) {
     }
 
     const titleMap = {
-        'dashboard':'Trang chủ', 'leaderboard':'Bảng Vàng', 'settings':'Cài đặt',
+        'dashboard':'Trang chủ', 'settings':'Cài đặt',
         'profile':'Hồ sơ cá nhân', 'blindspot':'Góc mù', 'flashcard':'Flashcard', 'result':'Kết quả',
         'setup':'Thiết lập bài thi', 'quiz':'Trắc nghiệm'
     };
     if (document.getElementById('topbar-title')) document.getElementById('topbar-title').textContent = titleMap[id] || id;
 
-    if(id === 'leaderboard') loadLeaderboardUI();
     if(id === 'flashcard') renderFlashcardDecks();
     if(id === 'blindspot') renderBlindspot();
     if(id === 'profile') setupProfileView();
@@ -1009,12 +1137,15 @@ function switchView(id) {
 
 function updateGlobalUI() {
     const d = window.userData; if(!d) return;
-    document.getElementById('side-ava').textContent = d.avatar;
-    document.getElementById('side-name').textContent = d.name || 'Khách';
-    document.getElementById('side-class').textContent = d.classInfo || 'YK24A - TNU';
-    document.getElementById('dash-streak').textContent = d.streak + ' Ngày';
-    document.getElementById('dash-done').textContent = d.totalDone + ' Câu';
-    document.getElementById('dash-rate').textContent = d.totalDone ? Math.round(d.totalCorrect/d.totalDone*100) + '%' : '0%';
+    d.progress = normalizeProgressData(d.progress);
+    const setText = (id, value) => { const el = document.getElementById(id); if(el) el.textContent = value; };
+    setText('side-ava', d.avatar || 'ðŸ‘¨â€âš•ï¸');
+    setText('side-name', d.name || 'KhÃ¡ch');
+    setText('side-class', d.classInfo || 'YK24A - TNU');
+    setText('dash-streak', (d.streak || 0) + ' NgÃ y');
+    setText('dash-done', (d.totalDone || 0) + ' CÃ¢u');
+    setText('dash-rate', d.totalDone ? Math.round((d.totalCorrect || 0)/d.totalDone*100) + '%' : '0%');
+    updateProgressPanel();
 }
 
 // ========================
@@ -1098,6 +1229,25 @@ function parseXLSXRaw(buf) {
     });
 }
 
+function normalizeKeyName(v) {
+    return String(v || '')
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]/g, '');
+}
+
+function pickField(obj, aliases, fallback = '') {
+    const direct = aliases.find(a => obj[a] !== undefined && obj[a] !== null && String(obj[a]).trim() !== '');
+    if(direct) return String(obj[direct]).trim();
+    const wanted = new Set(aliases.map(normalizeKeyName));
+    for(const [key, value] of Object.entries(obj || {})) {
+        if(wanted.has(normalizeKeyName(key)) && value !== undefined && value !== null && String(value).trim() !== '') return String(value).trim();
+    }
+    return fallback;
+}
+
 function normalizeQuizRow(r) {
     const normalized = { ...r };
     Object.keys(r || {}).forEach(k => {
@@ -1107,13 +1257,15 @@ function normalizeQuizRow(r) {
     normalized.b = normalized.b || normalized.B || '';
     normalized.c = normalized.c || normalized.C || '';
     normalized.d = normalized.d || normalized.D || '';
-    normalized.question = normalized.question || normalized.cauhoi || normalized['câu hỏi'] || '';
-    normalized.answer = normalized.answer || normalized.dapan || normalized['đáp án'] || '';
+    normalized.question = pickField(normalized, ['question', 'cauhoi', 'cau hoi', 'cÃ¢u há»i'], '');
+    normalized.answer = pickField(normalized, ['answer', 'dapan', 'dap an', 'Ä‘Ã¡p Ã¡n'], '');
+    normalized.subject = pickField(normalized, ['subject', 'monhoc', 'mon hoc', 'mÃ´n há»c', 'môn học', 'course', 'domain'], 'Chung');
+    normalized.topic = pickField(normalized, ['topic', 'chude', 'chu de', 'chÃ¡»§ Ä‘á»', 'chủ đề', 'tab', 'lesson', 'unit'], 'Chung');
     const explicitType = String(normalized.type || '').trim().toLowerCase();
     const hasChoices = !!(normalized.a || normalized.b || normalized.c || normalized.d);
     const type = explicitType === 'fill' || (!explicitType && !hasChoices && normalized.answer) ? 'fill' : 'mc';
-    const imageq = String(normalized.imageq || normalized.image || '').trim();
-    const imagea = String(normalized.imagea || '').trim();
+    const imageq = String(pickField(normalized, ['imageq', 'questionimage', 'image', 'anhcauhoi'], '')).trim();
+    const imagea = String(pickField(normalized, ['imagea', 'answerimage', 'anhdapan'], '')).trim();
     return { ...normalized, type, imageq, imagea, image: normalized.image || imageq || '' };
 }
 
@@ -1139,7 +1291,7 @@ function refreshQuizSetupUI() {
     const subjects = [...new Set(allQ.map(q=>q.subject||'Chung').filter(Boolean))];
     if(!subjects.includes(selSubject)) selSubject = subjects[0] || "";
     selTopics.clear();
-    renderSubjectFilter(subjects); updateTopicFilter(); updateCount();
+    renderSubjectFilter(subjects); updateTopicFilter(); updateCount(); updateProgressPanel();
 }
 
 function loadQ(rows) {
@@ -1233,19 +1385,19 @@ async function saveCustomFc() {
         }
     }
     
-    const authorName = window.userData.name || 'Bác sĩ ẩn danh';
+    const authorName = window.userData.name || (window.isGuest ? 'Khach' : 'Bac si an danh');
     if(exp) exp += ` \n(Tạo bởi: ${authorName})`;
     else exp = `(Tạo bởi: ${authorName})`;
 
     const newCard = {
-        _id: 'fc_user_' + Date.now() + '_' + window.currentUser.uid,
+        _id: 'fc_user_' + Date.now() + '_' + (window.currentUser?.uid || 'guest_local'),
         question: q, answer: a, image: imgUrl, explanation: exp, topic: topic,
         author: authorName,
         createdAt: Date.now()
     };
     
-    // Đẩy lên Cộng Đồng Firebase (Nếu mạng lỗi nó sẽ báo ở Console, nhưng vẫn lưu Local)
-    await window.publishCommunityCard(newCard);
+    // Guest mode does not write custom cards to Firebase community storage.
+    if(!window.isGuest) await window.publishCommunityCard(newCard);
 
     const myCard = {...newCard, srs: { interval: 0, easeFactor: 2.5, dueDate: Date.now() }};
     if(!window.userData.blindSpots) window.userData.blindSpots = [];
@@ -1297,6 +1449,7 @@ function getFiltered() {
 function updateCount() {
     const f = getFiltered();
     document.getElementById('max-count').textContent=`/ ${f.length}`;
+    updateProgressPanel();
 }
 
 // ========================
@@ -1308,12 +1461,17 @@ function setQuizMode(m) {
     document.getElementById('btn-mode-exam').className=`px-6 py-2 rounded-lg text-sm font-bold transition-all ${m==='exam'?'bg-primaryBlue text-white shadow-md':'text-textMuted hover:text-white'}`;
 }
 
-function startQuiz() {
+function startQuiz(source = 'new') {
     const f=getFiltered();
-    if(!f.length) return showToast('❌ Không có câu hỏi nào phù hợp với bộ lọc!');
+    if(!f.length) return showToast('âŒ KhÃ´ng cÃ³ cÃ¢u há»i nÃ o phÃ¹ há»£p vá»›i bá»™ lá»c!');
     const n = Math.min(parseInt(document.getElementById('count-input').value)||f.length, f.length);
-    activeQ = f.sort(()=>Math.random()-0.5).slice(0,n);
-    currentIdx=0; userAnswers={}; skippedQ.clear(); wrongQ=[]; startTime=Date.now();
+    let pool = [...f];
+    if(source === 'resume') pool = pool.filter(q => !getQuestionProgress(q)?.answered);
+    if(source === 'retryAnswered') pool = pool.filter(q => getQuestionProgress(q)?.answered);
+    if(!pool.length) return showToast(source === 'resume' ? 'âœ… Báº¡n Ä‘Ã£ hoÃ n thÃ nh táº¥t cáº£ cÃ¢u trong bá»™ lá»c nÃ y!' : 'âš ï¸ ChÆ°a cÃ³ cÃ¢u nÃ o Ä‘Ã£ lÃ m Ä‘á»ƒ luyá»‡n láº¡i.');
+    activeQ = pool.sort(()=>Math.random()-0.5).slice(0, source === 'new' ? n : pool.length);
+    currentIdx=0; userAnswers={}; skippedQ.clear(); wrongQ=[]; startTime=Date.now(); lastQuizSource=source;
+    markLastQuiz(source, activeQ.length);
     
     switchView('quiz');
     
@@ -1422,9 +1580,10 @@ function submitFillAnswer() {
     const q = activeQ[currentIdx];
     const raw = input.value.trim();
     if(!raw) return showToast('⚠️ Vui lòng nhập đáp án!');
-    const isOk = normalizeAnswer(raw) === normalizeAnswer(q.answer);
+    const isOk = isAnswerCorrect(q, raw);
     userAnswers[currentIdx] = raw;
     skippedQ.delete(currentIdx);
+    saveQuestionProgress(q, raw, isOk);
     input.disabled = true;
     input.classList.remove('border-gray-700', 'focus:border-primaryBlue');
     input.classList.add(isOk ? 'border-successCyan' : 'border-errorRed');
@@ -1446,7 +1605,8 @@ function selectOption(k) {
         if(userAnswers[currentIdx]) return;
         userAnswers[currentIdx]=k;
         const ans=activeQ[currentIdx].answer.toUpperCase();
-        const isOk=k===ans;
+        const isOk=isAnswerCorrect(activeQ[currentIdx], k);
+        saveQuestionProgress(activeQ[currentIdx], k, isOk);
         document.querySelectorAll('.choice-item').forEach(el=>{
             el.classList.add('locked'); el.style.pointerEvents='none'; const dk=el.dataset.k;
             if(dk===ans) el.classList.add('ans-correct');
@@ -1460,6 +1620,7 @@ function selectOption(k) {
         nextBtn.classList.remove('hidden'); nextBtn.style.display='flex';
     } else {
         userAnswers[currentIdx]=k; skippedQ.delete(currentIdx);
+        saveQuestionProgress(activeQ[currentIdx], k, isAnswerCorrect(activeQ[currentIdx], k));
         if(currentIdx+1<activeQ.length){currentIdx++; renderQuestion();} else renderQuestion();
     }
 }
@@ -1470,6 +1631,7 @@ function practiceNext() {
 
 function quizSkip() {
     skippedQ.add(currentIdx);
+    saveQuestionProgress(activeQ[currentIdx], '', false, 'skipped');
     if(currentIdx+1<activeQ.length){currentIdx++; renderQuestion();}
 }
 
@@ -1531,8 +1693,11 @@ async function submitQuiz() {
         d.lastDate=dStr;
     }
     
+    activeQ.forEach((q,i) => {
+        if(userAnswers[i]) saveQuestionProgress(q, userAnswers[i], isAnswerCorrect(q, userAnswers[i]));
+        else saveQuestionProgress(q, '', false, 'skipped');
+    });
     await window.syncDataToCloud();
-    if(quizMode==='exam') await window.pushLeaderboard(score, activeQ.length, selSubject);
     updateGlobalUI();
     
     document.getElementById('res-pct-text').textContent=pct+'%';
@@ -1809,47 +1974,29 @@ window.sm2Answer = async (rating) => {
     if(activeFlashcards.length > 0) showCard(); else startStudyDeck(currentDeck);
 };
 
-// ========================
-// LEADERBOARD & PROFILE
-// ========================
-async function loadLeaderboardUI() {
-    const tb=document.getElementById('lb-table');
-    tb.innerHTML='<tr><td colspan="4" class="py-8 text-center text-textMuted">Đang tải bảng xếp hạng...</td></tr>';
-    let data = [];
-    try { data = await window.getLeaderboardData(); } catch(e) { console.error(e); tb.innerHTML='<tr><td colspan="4" class="py-8 text-center text-errorRed">Không tải được bảng xếp hạng.</td></tr>'; return; }
-    tb.innerHTML='';
-    [1,2,3].forEach(rank=>{
-        const ava=document.getElementById(`lb-p${rank}-ava`);
-        const name=document.getElementById(`lb-p${rank}-name`);
-        const pct=document.getElementById(`lb-p${rank}-pct`);
-        if(ava) ava.textContent='-'; if(name) name.textContent='...'; if(pct) pct.textContent='0%';
-    });
-    if(!data.length) return tb.innerHTML='<tr><td colspan="4" class="py-8 text-center text-textMuted">Chưa có dữ liệu thi thử nào.</td></tr>';
-    [1,2,3].forEach(rank=>{
-        const d=data[rank-1]; if(!d) return;
-        document.getElementById(`lb-p${rank}-name`).textContent=d.name;
-        document.getElementById(`lb-p${rank}-pct`).textContent=d.pct+'%';
-        document.getElementById(`lb-p${rank}-ava`).textContent=d.avatar;
-    });
-    data.forEach((d,i)=>{
-        tb.innerHTML+=`<tr class="hover:bg-mainBg/40 transition-colors"><td class="py-5 px-6 text-textMuted font-bold text-lg">#${i+1}</td><td class="py-5 px-6 flex items-center gap-4"><div class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center border border-gray-600 text-xl">${d.avatar}</div><span class="text-white font-bold">${d.name}</span></td><td class="py-5 px-6 text-center text-[10px] font-bold text-primaryBlue uppercase tracking-widest">${d.deck}</td><td class="py-5 px-6 text-right text-successCyan font-black text-xl">${d.pct}%</td></tr>`;
-    });
-}
-
 function setupProfileView() {
-    const d=window.userData;
-    document.getElementById('prof-name').value=d.name || 'Khách';
-    document.getElementById('prof-class').value=d.classInfo || 'YK24A - TNU';
-    document.getElementById('prof-ava-preview').textContent=d.avatar;
+    const d=window.userData || {};
+    d.progress = normalizeProgressData(d.progress);
+    const profName = document.getElementById('prof-name');
+    const profClass = document.getElementById('prof-class');
+    const profAva = document.getElementById('prof-ava-preview');
+    const box=document.getElementById('ava-select-box');
+    if(!profName || !profClass || !profAva || !box) {
+        console.warn('Profile view is missing required DOM nodes.');
+        return;
+    }
+    profName.value=d.name || 'KhÃ¡ch';
+    profClass.value=d.classInfo || 'YK24A - TNU';
+    profAva.textContent=d.avatar || 'ðŸ‘¨â€âš•ï¸';
     
-    const box=document.getElementById('ava-select-box'); box.innerHTML='';
+    box.innerHTML='';
     AVATAR_LIST.forEach(a=>{
         const btn=document.createElement('div');
         btn.className=`text-4xl cursor-pointer p-2 rounded-2xl border-2 shrink-0 ${a===d.avatar?'border-primaryBlue bg-primaryBlue/20':'border-transparent hover:bg-gray-800'}`;
-        btn.textContent=a; btn.onclick=()=>{d.avatar=a; setupProfileView();}; box.appendChild(btn);
+        btn.textContent=a; btn.onclick=()=>{window.userData.avatar=a; setupProfileView(); updateGlobalUI();}; box.appendChild(btn);
     });
 
-    const hTb=document.getElementById('history-table'); hTb.innerHTML='';
+    const hTb=document.getElementById('history-table'); if(!hTb) return; hTb.innerHTML='';
     const history = Array.isArray(d.history) ? d.history : [];
     if(!history.length) {
         hTb.innerHTML='<tr><td colspan="4" class="py-10 text-center text-textMuted">Chưa có lịch sử làm bài.</td></tr>';
@@ -1864,7 +2011,7 @@ function setupProfileView() {
         });
     }
 
-    const bBox=document.getElementById('badges-box'); bBox.innerHTML='';
+    const bBox=document.getElementById('badges-box'); if(!bBox) return; bBox.innerHTML='';
     (Array.isArray(d.badges) ? d.badges : []).forEach(bid=>{
         const b=BADGE_LIST[bid]; if(!b) return;
         bBox.innerHTML+=`<div class="bg-cardBg border border-primaryBlue/30 rounded-3xl p-6 text-center shadow-[0_5px_15px_rgba(59,130,246,0.1)]"><div class="text-5xl mb-3">${b.i}</div><div class="text-white font-bold text-sm mb-1">${b.n}</div><div class="text-textMuted text-[10px]">${b.d}</div></div>`;
@@ -2008,7 +2155,7 @@ window.deleteAdminQuestion = () => {
 };
 
 window.pushAdminQuestionsToFirebase = async () => {
-    if(!window.userData) return showToast('⚠️ Bạn cần đăng nhập trước!');
+    if(!window.userData || window.isGuest) return showToast('Guest mode cannot push data to Firebase!');
     window.userData.adminQuestions = allQ;
     await window.syncDataToCloud();
     showToast('☁️ Đã đẩy bộ câu hỏi hiện tại lên Firebase user data!');
@@ -2169,7 +2316,6 @@ window.sm2Answer = async (rating) => {
 };
 
 </script>
-
 
 
 
